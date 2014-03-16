@@ -35,6 +35,10 @@ class Player(pyglet.sprite.Sprite):
 		self.velocity_x,self.velocity_y = 0.0,0.0
 		self.key_handler = key.KeyStateHandler()
 
+		self.floor = self.y
+		self.jumping = False
+		self.gravity = 1.2
+
 	def set(self, ptype=1):
 		if ptype != 1:
 			self.image = resources.player2_image
@@ -47,8 +51,6 @@ class Player(pyglet.sprite.Sprite):
 			self.right_sprite.x = self.x
 			self.right_sprite.y = self.y
 			self.right_sprite.visible = False
-			self.scale = 0.5
-			self.right_sprite.scale = 0.5
 			
 			self.left1, self.left2, self.left3 = resources.left(ptype)
 		
@@ -66,15 +68,23 @@ class Player(pyglet.sprite.Sprite):
 
 	def move_right(self):
 		self.right_sprite.x = self.x
+		self.right_sprite.y = self.y
 		self.visible = False
 		self.right_sprite.visible = True
 		self.left_sprite.visible = False
 
 	def move_left(self):
 		self.left_sprite.x = self.x
+		self.left_sprite.y = self.y
 		self.visible = False
 		self.right_sprite.visible = False
 		self.left_sprite.visible = True
+
+	def move_up(self, dt):
+		self.gravity = dt * 20
+		if self.jumping == False:
+			self.velocity_y = 500 * dt
+		self.jumping = True
 	
 	def check_bounds(self):
 		min_x = -self.image.width/2
@@ -92,25 +102,50 @@ class Player(pyglet.sprite.Sprite):
 
 	def update(self, dt):
 		"""This method should be called every frame."""
+		if self.jumping == True:
+			self.velocity_y -= self.gravity
+			self.y += self.velocity_y
+			if self.y < self.floor:
+				self.velocity_y = 0
+				self.y = self.floor
+				self.jumping = False
+		else:
+			if self.key_handler[key.UP]:
+				self.move_up(dt)
+				return key.UP
 
 		if self.key_handler[key.RIGHT]:
-			# Note: pyglet's rotation attributes are in "negative degrees"
-			force_x = self.thrust * dt
-			force_y = self.thrust * dt
-			self.x += force_x
-			#self.y += force_y
+			self.velocity_x = self.thrust * dt
+			
+			if self.jumping:
+				self.velocity_x -= dt * 20
+				self.x += self.velocity_x
+			
+			else:
+				self.x += self.velocity_x
 			self.move_right()
+			
 			self.check_bounds()
+			if self.key_handler[key.UP]:
+				self.move_up(dt)
+				return 'jumping_right'
+			
 			return key.RIGHT
 
 		elif self.key_handler[key.LEFT]:
-			# Note: pyglet's rotation attributes are in "negative degrees"
-			force_x = self.thrust * dt
-			force_y = self.thrust * dt
-			self.x -= force_x
-			#self.velocity_y -= force_y
+			self.velocity_x = self.thrust * dt
+			
+			if self.jumping:
+				self.velocity_x -= dt * 20
+				self.x -= self.velocity_x
+			else:
+				self.x -= self.velocity_x
 			self.move_left()
 			self.check_bounds()
+			if self.key_handler[key.UP]:
+				self.move_up(dt)
+				return 'jumping_left'
+			
 			return key.LEFT
 
 		else:
@@ -120,23 +155,46 @@ class Player(pyglet.sprite.Sprite):
 			return ''
 	
 	def remote_update(self, keys, dt):
-		if keys == key.RIGHT:
-			# Note: pyglet's rotation attributes are in "negative degrees"
-			force_x = self.thrust * dt
-			force_y = self.thrust * dt
-			self.x += force_x
-			#self.y += force_y
-			self.move_right()
-			self.check_bounds()
+		if self.jumping == True:
+			self.velocity_y -= self.gravity
+			self.y += self.velocity_y
+			if self.y < self.floor:
+				self.velocity_y = 0
+				self.y = self.floor
+				self.jumping = False
+		else:
+			if keys == key.UP:
+				self.move_up(dt)
 
-		elif keys == key.LEFT:
-			# Note: pyglet's rotation attributes are in "negative degrees"
-			force_x = self.thrust * dt
-			force_y = self.thrust * dt
-			self.x -= force_x
-			#self.velocity_y -= force_y
-			self.move_left()
+		if keys == key.RIGHT or keys == 'jumping_right':
+			self.velocity_x = self.thrust * dt
+
+			if self.jumping:
+				self.velocity_x -= dt * 20
+				self.x += self.velocity_x
+			else:
+				self.x += self.velocity_x
+			self.move_right()
+
 			self.check_bounds()
+			if keys == 'jumping_right':
+				self.move_up(dt)
+			
+
+		elif keys == key.LEFT or keys == 'jumping_left':
+			self.velocity_x = self.thrust * dt
+		
+			if self.jumping:
+				self.velocity_x -= dt * 20
+				self.x -= self.velocity_x
+			else:
+				self.x -= self.velocity_x
+			self.move_left()
+			
+			self.check_bounds()
+			if keys == 'jumping_left':
+				self.move_up(dt)
+		
 
 		else:
 			self.visible = True

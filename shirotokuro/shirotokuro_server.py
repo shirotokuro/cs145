@@ -21,6 +21,7 @@ def init():
 	global conn
 
 	serversocket = socket.socket()
+	remote_address = ''
 
 	host = ''
 	serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -44,10 +45,11 @@ def update(dt):
 	conn.sendMessage(player1.update(dt))
 	player2.remote_update(conn.getMessage(), dt)
 
+
 if __name__ == "__main__":
 	init()
 	# Update the game 120 times per second
 	pyglet.clock.schedule_interval(update, 1/120.0)
-
-	# Tell pyglet to do its thing
 	pyglet.app.run()
+	# Tell pyglet to do its thing
+	
