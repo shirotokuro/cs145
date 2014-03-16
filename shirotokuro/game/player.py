@@ -16,8 +16,8 @@ class Player(pyglet.sprite.Sprite):
 		self.right_sprite.x = self.x
 		self.right_sprite.y = self.y
 		self.right_sprite.visible = False
-		self.scale = 0.75
-		self.right_sprite.scale = 0.75
+		self.scale = 0.5
+		self.right_sprite.scale = 0.5
 
 		self.left1, self.left2, self.left3 = resources.left(1)
 		
@@ -30,7 +30,7 @@ class Player(pyglet.sprite.Sprite):
 		
 		# Velocity
 		
-		self.left_sprite.scale = 0.75
+		self.left_sprite.scale = 0.5
 		self.thrust = 300.0
 		self.velocity_x,self.velocity_y = 0.0,0.0
 		self.key_handler = key.KeyStateHandler()
@@ -47,8 +47,8 @@ class Player(pyglet.sprite.Sprite):
 			self.right_sprite.x = self.x
 			self.right_sprite.y = self.y
 			self.right_sprite.visible = False
-			self.scale = 0.75
-			self.right_sprite.scale = 0.75
+			self.scale = 0.5
+			self.right_sprite.scale = 0.5
 			
 			self.left1, self.left2, self.left3 = resources.left(ptype)
 		
@@ -60,9 +60,9 @@ class Player(pyglet.sprite.Sprite):
 			self.left_sprite.visible = False
 			
 			# Velocity
-			self.scale = 0.75
-			self.right_sprite.scale = 0.75
-			self.left_sprite.scale = 0.75
+			self.scale = 0.5
+			self.right_sprite.scale = 0.5
+			self.left_sprite.scale = 0.5
 
 	def move_right(self):
 		self.right_sprite.x = self.x
@@ -101,8 +101,35 @@ class Player(pyglet.sprite.Sprite):
 			#self.y += force_y
 			self.move_right()
 			self.check_bounds()
+			return key.RIGHT
 
 		elif self.key_handler[key.LEFT]:
+			# Note: pyglet's rotation attributes are in "negative degrees"
+			force_x = self.thrust * dt
+			force_y = self.thrust * dt
+			self.x -= force_x
+			#self.velocity_y -= force_y
+			self.move_left()
+			self.check_bounds()
+			return key.LEFT
+
+		else:
+			self.visible = True
+			self.right_sprite.visible = False
+			self.left_sprite.visible = False
+			return ''
+	
+	def remote_update(self, keys, dt):
+		if keys == key.RIGHT:
+			# Note: pyglet's rotation attributes are in "negative degrees"
+			force_x = self.thrust * dt
+			force_y = self.thrust * dt
+			self.x += force_x
+			#self.y += force_y
+			self.move_right()
+			self.check_bounds()
+
+		elif keys == key.LEFT:
 			# Note: pyglet's rotation attributes are in "negative degrees"
 			force_x = self.thrust * dt
 			force_y = self.thrust * dt
@@ -114,5 +141,4 @@ class Player(pyglet.sprite.Sprite):
 		else:
 			self.visible = True
 			self.right_sprite.visible = False
-			self.left_sprite.visible = False
-			
+			self.left_sprite.visible = False	
