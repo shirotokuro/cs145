@@ -19,6 +19,8 @@ pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
 
 def init():
 	global conn
+	global clientsocket
+
 	clientsocket = socket.socket()
 
 	clientsocket.connect(('127.0.0.1', 8888))
@@ -40,4 +42,8 @@ if __name__ == "__main__":
 	pyglet.clock.schedule_interval(update, 1/120.0)
 
 	# Tell pyglet to do its thing
-	pyglet.app.run()
+	try:
+		pyglet.app.run()
+	except Exception as e:
+		clientsocket.close()
+		print "Goodbye"

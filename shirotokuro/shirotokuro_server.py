@@ -19,6 +19,8 @@ pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
 
 def init():
 	global conn
+	global remote_socket
+	global serversocket
 
 	serversocket = socket.socket()
 	remote_address = ''
@@ -50,6 +52,11 @@ if __name__ == "__main__":
 	init()
 	# Update the game 120 times per second
 	pyglet.clock.schedule_interval(update, 1/120.0)
-	pyglet.app.run()
+	try:
+		pyglet.app.run()
+	except Exception as e:
+		remote_socket.close()
+		serversocket.close()
+		print "Goodbye"
 	# Tell pyglet to do its thing
 	
