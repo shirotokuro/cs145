@@ -46,4 +46,4 @@ if __name__ == "__main__":
 		pyglet.app.run()
 	except Exception as e:
 		clientsocket.close()
-		print "Goodbye"
+		print e

@@ -57,6 +57,6 @@ if __name__ == "__main__":
 	except Exception as e:
 		remote_socket.close()
 		serversocket.close()
-		print "Goodbye"
+		print e
 	# Tell pyglet to do its thing
 	
