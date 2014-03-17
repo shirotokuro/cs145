@@ -43,6 +43,7 @@ class Player(pyglet.sprite.Sprite):
 		self.gravity = 0.068
 		self.thrust = 60 * self.gravity
 
+
 	def set(self, ptype=1):
 		if ptype != 1:
 			self.image = resources.player2_image
@@ -90,9 +91,10 @@ class Player(pyglet.sprite.Sprite):
 		self.check_bounds()	
 		if self.jumping == False:
 			self.velocity_y = 60 * self.gravity
+			sound = pyglet.resource.media('sounds/jump.wav')
+			sound.play()
 		self.jumping = True
-		sound = pyglet.resource.media('sounds/jump.wav')
-		sound.play()
+		
 	
 	def check_bounds(self):
 		min_x = self.min_wall
