@@ -29,16 +29,16 @@ class Player(pyglet.sprite.Sprite):
 		
 		# Scale
 		
-		#self.scale = 0.5
-		#self.right_sprite.scale = 0.5
-		#self.left_sprite.scale = 0.5
+		self.scale = 0.5
+		self.right_sprite.scale = 0.5
+		self.left_sprite.scale = 0.5
 		self.velocity_x,self.velocity_y = 0.0,0.0
 		self.key_handler = key.KeyStateHandler()
 
 		self.floor = self.y
 		self.ceiling = self.y + self.height
-		self.min_wall = self.image.width/2
-		self.max_wall = 1024 - self.image.width/2
+		self.min_wall = self.image.width/4
+		self.max_wall = 1024 - self.image.width/4
 		self.jumping = False
 		self.gravity = 0.068
 		self.thrust = 60 * self.gravity
@@ -67,9 +67,9 @@ class Player(pyglet.sprite.Sprite):
 			self.left_sprite.visible = False
 			
 			# Scale
-			#self.scale = 0.5
-			#self.right_sprite.scale = 0.5
-			#self.left_sprite.scale = 0.5
+			self.scale = 0.5
+			self.right_sprite.scale = 0.5
+			self.left_sprite.scale = 0.5
 
 	def move_right(self):
 		self.check_bounds()

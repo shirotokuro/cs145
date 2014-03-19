@@ -32,9 +32,14 @@ def on_draw():
 	main_batch.draw()
 
 def update(dt):
+	msg = conn.getMessage
+	if msg != '##w@1t##':
+		player1.remote_update(conn.getMessage(), dt)
+	else:
+		print "Please wait while your partner connects"
+	
 	keys = player2.update(dt)
 	conn.sendMessage(keys)
-	player1.remote_update(conn.getMessage(), dt)
 
 if __name__ == "__main__":
 	init()
