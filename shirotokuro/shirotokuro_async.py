@@ -1,7 +1,5 @@
 import pyglet, random, math, socket, connection, time, message, traceback, asyncore, threading
 from game import player, resources
-import Tkinter
-import tkSimpleDialog
 
 #root = Tkinter.Tk()
 #root.withdraw()
@@ -33,7 +31,10 @@ UPDATE = 20
 
 def p2_update(conn):
 	while True:
-		player2.remote_update(conn.getMessage(), 0)
+		if playerid == 1:
+			player2.remote_update(conn.getMessage(), 0)
+		else:
+			player1.remote_update(conn.getMessage(), 0)
 
 def confirm(conn, playerid):
     while playerid == -1:
@@ -80,20 +81,7 @@ def init():
 			game_window.push_handlers(player1.key_handler)
 		else:
 			game_window.push_handlers(player2.key_handler)
-	#senderthread = threading.Thread(target = sender, args = (conn, playerid, player2id,))
-	#senderthread.start()
 
-	#while True:
-	#    response = conn.getMessage().replace("\\n","\n\t")
-	#    print "Server: " + response
-	#    if response.strip() == "":
-	#        break
-	#s.close()
-
-	#headers = [1, 'Hi']
-	#message = headers + ['con']
-	#conn.sendMessage(message)
-	#conn.sendMessage(message)
 	except Exception as e:
 		print "Client: Error happened! ", e
 		traceback.print_exc()
@@ -108,18 +96,11 @@ def on_draw():
 
 def update(dt):
 	if playerid == 1:
-		#player2.remote_update(conn.getMessage(), dt)
-		#conn.getMessage()
 		keys = player1.update(dt)
-		#if keys != '':
-		msg = [UPDATE, playerid, player2id, [], keys]
-		conn.sendMessage(msg)
+		conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 	else:
-		#player1.remote_update(conn.getMessage(), dt)
 		keys = player2.update(dt)
-		#if keys != '':
-		msg = [UPDATE, playerid, player2id, [], keys]
-		conn.sendMessage(msg)
+		conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 
 if __name__ == "__main__":
 	init()

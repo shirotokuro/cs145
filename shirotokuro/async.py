@@ -35,7 +35,7 @@ class ChatHandler(asyncore.dispatcher):
 
     def handle_read(self):
         """Notify server of any new incoming data"""
-        data = self.recv(1024)
+        data = self.recv(2048)
         if data != '\n':
             self.server.newMessage(data, self)
 

@@ -1,6 +1,6 @@
 import pickle
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 2048
 class _myConnection(object):
 	def __init__(self, s):
 		self.s = s
