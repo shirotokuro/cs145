@@ -1,5 +1,11 @@
 import pyglet, random, math, socket, connection
 from game import player, resources
+import Tkinter
+import tkSimpleDialog
+
+root = Tkinter.Tk()
+root.withdraw()
+username = tkSimpleDialog.askstring('Username', 'Enter your username')
 
 game_window = pyglet.window.Window(1024, 600)
 
@@ -17,6 +23,8 @@ game_objects = [player1, player2]
 game_window.push_handlers(player2.key_handler)
 pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
 
+game_window.set_visible(False)
+
 def init():
 	global conn
 	global clientsocket
@@ -25,6 +33,13 @@ def init():
 
 	clientsocket.connect(('127.0.0.1', 8888))
 	conn = connection.connection(clientsocket)
+
+	conn.sendMessage(username)
+	server_username = conn.getMessage()
+
+	print "Connected with player " + server_username
+
+	game_window.set_visible(True)
 
 @game_window.event
 def on_draw():
