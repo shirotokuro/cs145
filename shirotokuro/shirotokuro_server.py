@@ -72,5 +72,6 @@ if __name__ == "__main__":
 		remote_socket.close()
 		#serversocket.close()
 		print e
+	serversocket.close()
 	# Tell pyglet to do its thing
 	
