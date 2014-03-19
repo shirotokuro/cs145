@@ -26,20 +26,20 @@ pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
 game_window.set_visible(False)
 
 def init():
-	global conn
-	global clientsocket
+global conn
+global clientsocket
 
-	clientsocket = socket.socket()
+clientsocket = socket.socket()
 
-	clientsocket.connect(('127.0.0.1', 8888))
-	conn = connection.connection(clientsocket)
+clientsocket.connect(('127.0.0.1', 8888))
+conn = connection.connection(clientsocket)
 
-	conn.sendMessage(username)
-	server_username = conn.getMessage()
+conn.sendMessage(username)
+server_username = conn.getMessage()
 
-	print "Connected with player " + server_username
+print "Connected with player " + server_username
 
-	game_window.set_visible(True)
+game_window.set_visible(True)
 
 @game_window.event
 def on_draw():
@@ -47,14 +47,9 @@ def on_draw():
 	main_batch.draw()
 
 def update(dt):
-	msg = conn.getMessage
-	if msg != '##w@1t##':
-		player1.remote_update(conn.getMessage(), dt)
-	else:
-		print "Please wait while your partner connects"
-	
 	keys = player2.update(dt)
 	conn.sendMessage(keys)
+	player1.remote_update(conn.getMessage(), dt)
 
 if __name__ == "__main__":
 	init()
@@ -66,4 +61,4 @@ if __name__ == "__main__":
 		pyglet.app.run()
 	except Exception as e:
 		clientsocket.close()
-		print e
+	print e
