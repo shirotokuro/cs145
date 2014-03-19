@@ -1,4 +1,4 @@
-import pyglet, random, math, socket, connection, time, message, traceback, asyncore
+import pyglet, random, math, socket, connection, time, message, traceback, asyncore, threading
 from game import player, resources
 import Tkinter
 import tkSimpleDialog
@@ -31,6 +31,10 @@ WAIT = 55
 PAIR = 22
 UPDATE = 20
 
+def p2_update(conn):
+	while True:
+		player2.remote_update(conn.getMessage(), 0)
+
 def confirm(conn, playerid):
     while playerid == -1:
         message = conn.getMessage()
@@ -45,10 +49,9 @@ def pair(conn, playerid, player2id):
         msg = [WAIT, playerid, player2id, [], '']
         conn.sendMessage(msg)
         m = conn.getMessage()
-        print m
         player2id = m[1]
         if player2id == -1:
-            time.sleep(0.1)
+            time.sleep(0.01)
     print "Your partner is ", player2id
     return player2id
 
@@ -108,20 +111,22 @@ def update(dt):
 		#player2.remote_update(conn.getMessage(), dt)
 		#conn.getMessage()
 		keys = player1.update(dt)
-		if keys != '':
-			msg = [UPDATE, playerid, player2id, [], keys]
-			conn.sendMessage(msg)
+		#if keys != '':
+		msg = [UPDATE, playerid, player2id, [], keys]
+		conn.sendMessage(msg)
 	else:
 		#player1.remote_update(conn.getMessage(), dt)
 		keys = player2.update(dt)
-		if keys != '':
-			msg = [UPDATE, playerid, player2id, [], keys]
-			conn.sendMessage(msg)
+		#if keys != '':
+		msg = [UPDATE, playerid, player2id, [], keys]
+		conn.sendMessage(msg)
 
 if __name__ == "__main__":
 	init()
 	# Update the game 120 times per second
 	pyglet.clock.schedule_interval(update, 1/120.0)
+	updater = threading.Thread(target=p2_update, args=(conn,))
+	updater.start()
 	# Tell pyglet to do its thing
 	try:
 		pyglet.app.run()

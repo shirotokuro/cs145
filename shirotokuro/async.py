@@ -37,13 +37,11 @@ class ChatHandler(asyncore.dispatcher):
         """Notify server of any new incoming data"""
         data = self.recv(1024)
         if data != '\n':
-            print data
             self.server.newMessage(data, self)
 
     def handle_write(self):
         """send some amount of buffer"""
         sent = self.send(self.buffer)
-        print self.buffer
         self.buffer = self.buffer[sent:]
 
 class ChatServer(asyncore.dispatcher):
@@ -108,7 +106,7 @@ class ChatServer(asyncore.dispatcher):
         self.buffer = data
         #print "#", self.buffer
         data = pickle.loads(data)
-        print data
+        #print data
         m = message.Message(data)
         
         if m.type == WAIT:
@@ -125,7 +123,7 @@ class ChatServer(asyncore.dispatcher):
             msg = pickle.dumps(msg)
             self.clients[self.clientids.index(m.pid)].buffer += msg
         if m.type == UPDATE:
-            print m.msg
+           # print m.msg
             self.clients[m.p2id - 1].buffer += pickle.dumps(m.msg)
 
 
