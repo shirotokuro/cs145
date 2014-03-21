@@ -44,6 +44,9 @@ class ChatHandler(asyncore.dispatcher):
         sent = self.send(self.buffer)
         self.buffer = self.buffer[sent:]
 
+    def handle_error(self):
+        self.close()
+
 class ChatServer(asyncore.dispatcher):
     """Receive and forward chat messages
 
@@ -80,11 +83,12 @@ class ChatServer(asyncore.dispatcher):
 
     def checkpid(self, pid):
         try:
-            print self.availclients
+            #print len(self.availclients)
             if len(self.availclients) != 1:
                 p2 = -1
-                while p2 != -1 and p2 != pid:
-                    p2 = random.choice(p2)
+                print p2
+                while p2 == -1 or p2 == pid:
+                    p2 = self.availclients.pop()
                     print p2
                 return p2
             else:
@@ -99,7 +103,7 @@ class ChatServer(asyncore.dispatcher):
             else:
                 return 1
         else:
-            return -1
+            return -1   
 
     def newMessage(self, data, fromWho):
         """Put data in all clients' buffers"""
@@ -110,23 +114,34 @@ class ChatServer(asyncore.dispatcher):
         m = message.Message(data)
         
         if m.type == WAIT:
-            #try:
-             #   i = self.availclients.index(m.pid)
-            #except Exception, e:
-            #    self.availclients = self.availclients + [m.pid]
-            
-            available = self.pair(m.pid)
-            if available != -1:
-                self.paired = self.paired + [m.pid]
-                self.paired = self.paired + [available]
-            msg = [PAIR, available]
-            msg = pickle.dumps(msg)
-            self.clients[self.clientids.index(m.pid)].buffer += msg
-        if m.type == UPDATE:
+            try:
+                i = self.paired.index(m.pid)
+                print 'das'
+                self.availclients.remove(m.pid)
+                msg = [PAIR, self.paired.index(self.paired.index(m.pid))+1, 1]
+                print msg
+                msg = pickle.dumps(msg)
+                self.clients[self.clientids.index(m.pid)].buffer += msg  
+            except Exception, e:
+                try:
+                   i = self.availclients.index(m.pid)
+                except Exception, e:
+                    self.availclients = self.availclients + [m.pid]
+                
+                available = self.checkpid(m.pid)
+                if available != -1:
+                    self.paired = self.paired + [m.pid]
+                    self.paired = self.paired + [available]
+
+                msg = [PAIR, available, 2]
+                msg = pickle.dumps(msg)
+                self.clients[self.clientids.index(m.pid)].buffer += msg
+        elif m.type == UPDATE:
            # print m.msg
             self.clients[m.p2id - 1].buffer += pickle.dumps(m.msg)
-
-
+        elif m.type == QUIT:
+            self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
+            self.clients[self.clientids.index(m.pid)].close()
 
     def handle_accept(self):
         """Deal with newly accepted connection"""
@@ -139,6 +154,10 @@ class ChatServer(asyncore.dispatcher):
         client.send(pickle.dumps(player_details))
         self.clientids = self.clientids + [self.clientid]
         self.clientid += 1
-
-c = ChatServer()
-c.serve()
+try:
+    c = ChatServer()
+    c.serve()
+except (KeyboardInterrupt, SystemExit):
+        print 'sad'
+except Exception, e:
+    print 'err'
