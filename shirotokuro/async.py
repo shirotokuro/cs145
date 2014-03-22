@@ -154,6 +154,7 @@ class ChatServer(asyncore.dispatcher):
         client.send(pickle.dumps(player_details))
         self.clientids = self.clientids + [self.clientid]
         self.clientid += 1
+
 try:
     c = ChatServer()
     c.serve()

@@ -34,7 +34,6 @@ def p2_update(conn,s):
 	while True:
 		try:
 			msg = conn.getMessage()
-			print msg
 			if msg == QUIT:
 				print "Sorry your partner quit. Exiting..."
 				s.close()
@@ -49,25 +48,25 @@ def p2_update(conn,s):
 				'dsa'
 
 def confirm(conn, playerid):
-    while playerid == -1:
-        message = conn.getMessage()
-        if message[0] == 0:
-            playerid = message[1]
-            print "Your playerid is ", playerid
-    return playerid
+	while playerid == -1:
+		message = conn.getMessage()
+		if message[0] == 0:
+			playerid = message[1]
+			print "Your playerid is ", playerid
+	return playerid
 
 def pair(conn, playerid, player2id):
-    print 'waiting...'
-    while player2id == -1:
-        msg = [WAIT, playerid, player2id, [], '']
-        conn.sendMessage(msg)
-        m = conn.getMessage()
-        player2id = m[1]
-        if player2id == -1:
-            time.sleep(0.01)
-    print "Your partner is ", player2id
-    print "Your playertype is ", m[2]
-    return player2id, m[2]
+	print 'waiting...'
+	while player2id == -1:
+		msg = [WAIT, playerid, player2id, [], '']
+		conn.sendMessage(msg)
+		m = conn.getMessage()
+		player2id = m[1]
+		if player2id == -1:
+			time.sleep(0.01)
+	print "Your partner is ", player2id
+	print "Your playertype is ", m[2]
+	return player2id, m[2]
 
 def init():
 	global conn,s
@@ -90,7 +89,6 @@ def init():
 		playerid = confirm(conn, playerid)
 		player2id,playertype = pair(conn, playerid, player2id)
 		game_window = gamewindow.GameWindow()
-
 		if playertype == 1:
 			game_window.push_handlers(game_window.player1.key_handler)
 		else:
@@ -104,6 +102,7 @@ def init():
 		traceback.print_exc()
 		conn.sendMessage([QUIT,playerid, player2id, [], keys])
 		s.close()
+
 def update(dt):
 
 	if playertype == 1:
@@ -114,16 +113,23 @@ def update(dt):
 	conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 
 if __name__ == "__main__":
+	
 	global conn,s
 	init()
 	# Update the game 120 times per second
 	pyglet.clock.schedule_interval(update, 1/120.0)
-	updater = threading.Thread(target=p2_update, args=(conn,s,))
-	updater.daemon =True
-	updater.start()
 	# Tell pyglet to do its thing
+	@game_window.event
+	def on_close():
+		conn.sendMessage([QUIT,playerid, player2id, [], ''])
+		s.close()
+	
 	try:
+		updater = threading.Thread(target=p2_update, args=(conn,s,))
+		updater.daemon =True
+		updater.start()
 		pyglet.app.run()
+
 	except (KeyboardInterrupt, SystemExit):
 		try:	
 			conn.sendMessage([QUIT,playerid, player2id, [], ''])
@@ -134,5 +140,9 @@ if __name__ == "__main__":
 		try:
 			conn.sendMessage([QUIT,playerid, player2id, [], ''])
 			s.close()
+		except socket.error as error:
+
+			print error
+		#	print 'Server error!'
 		except Exception, e:
-			print e
+			sher = 1
