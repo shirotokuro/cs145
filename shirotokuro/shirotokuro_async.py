@@ -19,10 +19,6 @@ game_over_label = pyglet.text.Label(text="GAME OVER",
                                     x=2000, y=300, anchor_x='center', 
                                     font_size=48, bold= True, color=(236, 188, 175, 255),batch=main_batch)
 
-player_left_label = pyglet.text.Label(text="Sorry, your partner left.",
-                                    x=2000, y=300, anchor_x='center', 
-                                    font_size=48, bold= True, color=(236, 188, 175, 255),batch=main_batch)
-
 game_objects = [player1, player2]
 
 # Tell the main window that the player object responds to events
@@ -43,10 +39,7 @@ def p2_update(conn,s):
 		try:
 			msg = conn.getMessage()
 			if msg == QUIT:
-				player_left_label.x=500
-				time.sleep(2)
-				print 'Bye'
-				game_window.has_exit = True
+				print "Sorry your partner quit. Exiting..."
 				s.close()
 			else:
 				if len(game_objects) > 0:
@@ -59,7 +52,7 @@ def p2_update(conn,s):
 					#obj.update(0)
 					if obj.dead:
 						player_dead= True
-				if player_dead:
+				if player_dead or msg=='G.O.':
 					player1.delete()
 					player2.delete()
 					game_over_label.x=500
@@ -119,16 +112,17 @@ def init():
 			game_window.push_handlers(player1.key_handler)
 		else:
 			game_window.push_handlers(player2.key_handler)
-
-		game_window.set_visible(True)
 	except (KeyboardInterrupt, SystemExit):
 		conn.sendMessage([QUIT,playerid, player2id, [], ''])
 		s.close()
 		print 'dasda'
 	except Exception as e:
-		print "Server inactive! "
-		
+		print "Client: Error happened! ", e
+		traceback.print_exc()
+		conn.sendMessage([QUIT,playerid, player2id, [], keys])
+		s.close()
 
+	game_window.set_visible(True)
 
 @game_window.event
 def on_draw():
@@ -136,12 +130,6 @@ def on_draw():
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 	lvl1.lvl1_bg()
 	main_batch.draw()
-
-@game_window.event
-def on_close():
-	conn.sendMessage([QUIT,playerid, player2id, [], ''])
-	s.close()
-
 
 def update(dt):
 	if len(game_objects) > 0:
@@ -157,6 +145,7 @@ def update(dt):
 		if obj.dead:
 			player_dead= True
 	if player_dead:
+		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
 		player1.delete()
 		player2.delete()
 		game_over_label.x=500
@@ -166,9 +155,9 @@ def update(dt):
 if __name__ == "__main__":
 	global conn,s
 	
-	init()
 	# Tell pyglet to do its thing
 	try:
+		init()
 		
 		# Update the game 120 times per second
 		pyglet.clock.schedule_interval(update, 1/120.0)
@@ -182,9 +171,13 @@ if __name__ == "__main__":
 			s.close()
 		except Exception, e:
 			print 'dasda'
-	except socket.error as error:
-		traceback.print_exc()
-		print error
-	except Exception, e:
-		traceback.print_exc()
-		print e
+	except Exception as e:
+		try:
+			conn.sendMessage([QUIT,playerid, player2id, [], ''])
+			s.close()
+		except socket.error as error:
+
+			print error
+		#	print 'Server error!'
+		except Exception, e:
+			sher = 1
