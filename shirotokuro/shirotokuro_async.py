@@ -42,6 +42,11 @@ def p2_update(conn,s):
 				print "Sorry your partner quit. Exiting..."
 				s.close()
 			else:
+				if len(game_objects) > 0:
+					if playertype == 1:
+						player2.remote_update(msg, 0)
+					else:
+						player1.remote_update(msg, 0)
 				player_dead = False
 				for obj in game_objects:
 					#obj.update(0)
@@ -53,11 +58,6 @@ def p2_update(conn,s):
 					game_over_label.x=500
 					game_objects.remove(player1)
 					game_objects.remove(player2)
-				if len(game_objects) > 0:
-					if playertype == 1:
-						player2.remote_update(msg, 0)
-					else:
-						player1.remote_update(msg, 0)
 		except Exception, e:
 			try:
 				s.close()
@@ -132,6 +132,13 @@ def on_draw():
 	main_batch.draw()
 
 def update(dt):
+	if len(game_objects) > 0:
+		if playertype == 1:
+			keys = player1.update(dt)
+			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+		else:
+			keys = player2.update(dt)
+			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 	player_dead = False
 	for obj in game_objects:
 		#obj.update(dt)
@@ -143,13 +150,6 @@ def update(dt):
 		game_over_label.x=500
 		game_objects.remove(player1)
 		game_objects.remove(player2)
-	if len(game_objects) > 0:
-		if playertype == 1:
-			keys = player1.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-		else:
-			keys = player2.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 
 if __name__ == "__main__":
 	global conn,s
