@@ -46,4 +46,17 @@ whtdoortop.width = whtdoortop.height= 40
 whtdoor= pyglet.resource.image("imgs/whtdoor.png")
 whtdoor.width = whtdoor.height= 40
 
-border= pyglet.resource.image("imgs/lvl1/border.png")
+gemWht= pyglet.resource.image("imgs/gemWht.png")
+gemWht.width = gemWht.height = 40
+
+gemBlk= pyglet.resource.image("imgs/gemBlk.png")
+gemBlk.width = gemBlk.height = 40
+
+button= pyglet.resource.image("imgs/lvl1/button.png")
+button.width= button.height= 40
+
+elev= pyglet.resource.image("imgs/lvl1/elev.png")
+elev.width= elev.height= 40
+elev.anchor_y = elev.height
+
+#border= pyglet.resource.image("imgs/lvl1/border.png")

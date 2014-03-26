@@ -1,6 +1,7 @@
 import pyglet, math
 from pyglet.window import key
 import resources
+from lvl1 import elevator
 
 class Player(pyglet.sprite.Sprite):
 	"""A sprite with physical properties such as velocity"""
@@ -49,6 +50,10 @@ class Player(pyglet.sprite.Sprite):
 		self.obj_size= 40
 		self.dead = False
 		self.fin= False
+		self.gem_count= 3
+		self.onElev= False
+		self.stepper= 0
+		self.counter = 0
 
 	def set(self, ptype=1):
 		if ptype != 1:
@@ -57,7 +62,7 @@ class Player(pyglet.sprite.Sprite):
 			self.image.y = self.y
 			self.right1, self.right2, self.right3 = resources.right(ptype)
 			self.anim_right = pyglet.image.Animation.from_image_sequence([
-        	self.right1, self.right2, self.right3], 0.1, True)
+        	self.right1, self.right2], 0.1, True)
 			self.right_sprite = pyglet.sprite.Sprite(img=self.anim_right, x=self.x, y=self.y, batch=self.batch)
 			self.right_sprite.x = self.x
 			self.right_sprite.y = self.y
@@ -73,9 +78,9 @@ class Player(pyglet.sprite.Sprite):
 			self.left_sprite.visible = False
 			
 			# Scale
-			self.scale = 0.50
-			self.right_sprite.scale = 0.50
-			self.left_sprite.scale = 0.50
+			self.scale = 0.55
+			self.right_sprite.scale = 0.55
+			self.left_sprite.scale = 0.55
 
 			self.ptype = 2
 
@@ -125,17 +130,30 @@ class Player(pyglet.sprite.Sprite):
 			#right
 			x_index = int(math.floor((self.x+(self.image.width*self.scale)/2)/self.obj_size))
 			y_index = int(math.floor(self.y/self.obj_size))
+			if x_index >= 25:
+				x_index = 24
 			if self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7: 
 				self.x= x_index*self.obj_size - (self.image.width*self.scale)/2
+			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (x_index*40 + 13) <= (self.x +(self.image.width*self.scale)/2) <= (x_index*40 +15):
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
+			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (x_index*40 + 12) <= (self.x +(self.image.width*self.scale)/2) <= (x_index*40 +16):
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
 		elif dir == 2:
 			#left
 			x_index = int(math.floor((self.x-(self.image.width*self.scale)/2)/self.obj_size))
 			y_index = int(math.floor(self.y/self.obj_size))
 			if self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7: 
 				self.x= (x_index+1)*self.obj_size + (self.image.width*self.scale)/2
+			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (x_index*40 + 24) <= math.floor(self.x-(self.image.width*self.scale)/2) <= (x_index*40 + 28) :
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
+			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (x_index*40 + 24) <= math.floor(self.x-(self.image.width*self.scale)/2) <= (x_index*40 + 28):
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
 		elif dir == 3:
 			#jump
-			print self.y
 			x_index = int(math.floor(self.x/self.obj_size))
 			y_index = int(math.floor((self.y+(self.image.height*self.scale)/2)/self.obj_size))
 			if (self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7) or (self.lvl[y_index][x_index] >= 14 and self.lvl[y_index][x_index] <=16): 
@@ -145,8 +163,27 @@ class Player(pyglet.sprite.Sprite):
 			#fall and other things
 			x_index = int(math.floor(self.x/self.obj_size))
 			y_index = int(math.floor((self.y-(self.image.height*self.scale)/2)/self.obj_size))
-			y_index2= int(math.ceil((self.y-(self.image.height*self.scale/2))/self.obj_size))
-			if self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7: 
+			y_index2= int(math.ceil((self.y-(self.image.height*self.scale/2))/self.obj_size)) 
+			if self.onElev and x_index != 0:
+				self.onElev = False
+			
+			if (self.lvl[5][5]!= 17 or self.lvl[8][6] != 17) and self.stepper == self.ptype:
+				if x_index != 5 and 215 <= self.y <= 255:
+					self.lvl[5][5] = 17
+					elevator.dir= 2
+					self.stepper = 0
+				elif x_index != 6 and 345 <= self.y <= 375:
+					self.lvl[8][6] = 17
+					elevator.dir= 2
+					self.stepper = 0
+			if self.onElev and not self.jumping:
+				self.floor= self.y = elevator.y + (self.image.height*self.scale)/2
+				self.ceiling = self.floor + self.height
+			elif x_index == 0 and ((240 <= elevator.y <= 243 and 260 <= self.y <= 264) or ( 280 <= elevator.y <= 286 and 301 <= self.y <= 305)):
+				self.floor= self.y = elevator.y + (self.image.height*self.scale)/2
+				self.ceiling = self.floor + self.height
+				self.onElev = True
+			elif self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7:
 				self.y= self.floor= (y_index+1)*self.obj_size + (self.image.height*self.scale)/2
 				self.ceiling = self.y + self.height
 			elif self.lvl[y_index-1][x_index] == 0:
@@ -155,8 +192,26 @@ class Player(pyglet.sprite.Sprite):
 				self.dead = True
 			elif self.ptype == 2 and (self.lvl[y_index2-1][x_index] == 15 or self.lvl[y_index2-1][x_index] == 14):
 				self.dead = True
-			elif self.ptype == 1 and self.lvl[y_index][x_index] == 12:
+			elif self.gem_count == 0 and self.ptype == 1 and 775 <= self.x <= 785 and self.y == 505.0:
 				self.fin= True
+			elif self.gem_count == 0 and self.ptype == 2 and 895 <= self.x <= 905 and self.y == 505.0:
+				self.fin= True
+			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
+			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
+				self.gem_count= self.gem_count -1
+				self.lvl[y_index][x_index] = 0
+			elif self.lvl[y_index][x_index] == 17 and (233 == self.y or 355<= self.y <= 360):
+				#print 'purintu'
+				self.lvl[y_index][x_index] = 0
+				if elevator.dir == 0:
+					elevator.dir = 1
+				elif elevator.dir == 1:
+					elevator.dir = 2 
+				elif elevator.dir == 2:
+					elevator.dir = 1
+				self.stepper = self.ptype
 
 	def delete(self):
 		self.right_sprite.delete()

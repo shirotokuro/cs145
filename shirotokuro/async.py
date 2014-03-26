@@ -16,6 +16,7 @@ QUIT = 69
 WAIT = 55
 PAIR = 22
 UPDATE = 20
+READY = 5
 
 
 
@@ -116,7 +117,6 @@ class ChatServer(asyncore.dispatcher):
         if m.type == WAIT:
             try:
                 i = self.paired.index(m.pid)
-                print 'das'
                 self.availclients.remove(m.pid)
                 msg = [PAIR, self.paired.index(self.paired.index(m.pid))+1, 1]
                 print msg
@@ -132,16 +132,28 @@ class ChatServer(asyncore.dispatcher):
                 if available != -1:
                     self.paired = self.paired + [m.pid]
                     self.paired = self.paired + [available]
+                    msg = [PAIR, m.pid, 1]
+                    msg = pickle.dumps(msg)
+                    self.clients[self.clientids.index(available)].buffer += msg
+
+                    print self.paired
 
                 msg = [PAIR, available, 2]
                 msg = pickle.dumps(msg)
                 self.clients[self.clientids.index(m.pid)].buffer += msg
+                
         elif m.type == UPDATE:
            # print m.msg
             self.clients[m.p2id - 1].buffer += pickle.dumps(m.msg)
         elif m.type == QUIT:
-            self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
+            try:
+                self.availclients.remove(m.pid)
+                self.availclients.remove(m.p2id)
+            except Exception, e:
+                self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
             self.clients[self.clientids.index(m.pid)].close()
+        elif m.type == READY:
+            self.clients[m.p2id - 1].buffer += pickle.dumps([READY, m.pid, p.p2id])
 
     def handle_accept(self):
         """Deal with newly accepted connection"""

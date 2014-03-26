@@ -33,6 +33,7 @@ QUIT = 69
 WAIT = 55
 PAIR = 22
 UPDATE = 20
+READY = 5
 
 def p2_update(conn,s):
 	while True:
@@ -52,7 +53,7 @@ def p2_update(conn,s):
 					#obj.update(0)
 					if obj.dead:
 						player_dead= True
-				if player_dead or msg=='G.O.':
+				if msg=='G.O.':
 					player1.delete()
 					player2.delete()
 					game_over_label.x=500
@@ -78,13 +79,16 @@ def pair(conn, playerid, player2id):
     while player2id == -1:
         msg = [WAIT, playerid, player2id, [], '']
         conn.sendMessage(msg)
-        m = conn.getMessage()
-        player2id = m[1]
+        try:
+        	m = conn.getMessage()
+	        print m
+	        player2id = m[1]
+        except Exception, e:
+        	print e
         if player2id == -1:
-            time.sleep(0.01)
+            time.sleep(0.001)
     print "Your partner is ", player2id
     print "Your playertype is ", m[2]
-
     return player2id, m[2]
 
 def init():
@@ -94,33 +98,23 @@ def init():
 	playerid = -1
 	player2id = -1
 
-	try:
-		host = '127.0.0.1'
-		port = 7667
-		s = socket.socket()
+	host = '127.0.0.1'
+	port = 7667
+	s = socket.socket()
 
-		print "Client tries to connect to server..."
-		s.connect((host, port)) 
+	print "Client tries to connect to server..."
+	s.connect((host, port)) 
 
-		print "Client connected!"
+	print "Client connected!"
 
-		conn = connection.connection(s) 
-		playerid = confirm(conn, playerid)
-		player2id,playertype = pair(conn, playerid, player2id)
+	conn = connection.connection(s) 
+	playerid = confirm(conn, playerid)
+	player2id,playertype = pair(conn, playerid, player2id)
 
-		if playertype == 1:
-			game_window.push_handlers(player1.key_handler)
-		else:
-			game_window.push_handlers(player2.key_handler)
-	except (KeyboardInterrupt, SystemExit):
-		conn.sendMessage([QUIT,playerid, player2id, [], ''])
-		s.close()
-		print 'dasda'
-	except Exception as e:
-		print "Client: Error happened! ", e
-		traceback.print_exc()
-		conn.sendMessage([QUIT,playerid, player2id, [], keys])
-		s.close()
+	if playertype == 1:
+		game_window.push_handlers(player1.key_handler)
+	else:
+		game_window.push_handlers(player2.key_handler)
 
 	game_window.set_visible(True)
 
@@ -131,26 +125,35 @@ def on_draw():
 	lvl1.lvl1_bg()
 	main_batch.draw()
 
+@game_window.event
+def on_close():
+	conn.sendMessage([QUIT,playerid, player2id, [], ''])
+	pyglet.clock.unschedule(update)
+	s.close()
+
 def update(dt):
-	if len(game_objects) > 0:
-		if playertype == 1:
-			keys = player1.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-		else:
-			keys = player2.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-	player_dead = False
-	for obj in game_objects:
-		#obj.update(dt)
-		if obj.dead:
-			player_dead= True
-	if player_dead:
-		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
-		player1.delete()
-		player2.delete()
-		game_over_label.x=500
-		game_objects.remove(player1)
-		game_objects.remove(player2)
+	try:
+		if len(game_objects) > 0:
+			if playertype == 1:
+				keys = player1.update(dt)
+				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+			else:
+				keys = player2.update(dt)
+				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+		player_dead = False
+		for obj in game_objects:
+			#obj.update(dt)
+			if obj.dead:
+				player_dead= True
+		if player_dead:
+			conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
+			player1.delete()
+			player2.delete()
+			game_over_label.x=500
+			game_objects.remove(player1)
+			game_objects.remove(player2)
+	except Exception, e:
+		print 'boom'
 
 if __name__ == "__main__":
 	global conn,s
@@ -166,13 +169,16 @@ if __name__ == "__main__":
 		updater.start()
 		pyglet.app.run()
 	except (KeyboardInterrupt, SystemExit):
-		try:	
+		try:
+			print 'SystemExit'	
 			conn.sendMessage([QUIT,playerid, player2id, [], ''])
 			s.close()
 		except Exception, e:
 			print 'dasda'
 	except Exception as e:
 		try:
+			print e
+			traceback.print_exc()
 			conn.sendMessage([QUIT,playerid, player2id, [], ''])
 			s.close()
 		except socket.error as error:
@@ -180,4 +186,5 @@ if __name__ == "__main__":
 			print error
 		#	print 'Server error!'
 		except Exception, e:
+			print e
 			sher = 1
