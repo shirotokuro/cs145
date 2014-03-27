@@ -74,6 +74,7 @@ def on_draw():
 			glEnable(GL_BLEND)
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 			lvl1.lvl1_bg()
+			game_window.update_timer_label()
 			game_window.main_batch.draw()
 	except Exception, e:
 		print e
@@ -210,6 +211,11 @@ def update(dt):
 		game_over = True
 		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
+def update_timer():
+	while True:
+		game_window.update_time()
+		time.sleep(1)
+
 if __name__ == "__main__":
 	global conn,s
 	
@@ -220,6 +226,10 @@ if __name__ == "__main__":
 	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
 	updater.daemon =True
 	updater.start()
+
+	timer_thread = threading.Thread(target=update_timer)
+	timer_thread.daemon = True
+	timer_thread.start()
 
 	e.clear()
 
