@@ -4,6 +4,13 @@ import gamewindow
 from pyglet.window import key
 from pyglet.window import mouse
 from pyglet.gl import *
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("server", help="IP address of your server.")
+args = parser.parse_args()
+HOST = args.server
+
 
 OK = 200
 ERR = 666
@@ -16,8 +23,6 @@ ORPHAN = 1
 
 window = pyglet.window.Window(1000, 600)
 
-
-game_window = gamewindow.GameWindow()
 game_menu_label = pyglet.text.Label(text="CLICK ANYWHERE TO START!",
                                     x=500, y=300, anchor_x='center', 
                                     font_size=40, bold= True, color=(236, 188, 175, 255))
@@ -30,12 +35,12 @@ def on_mouse_press(x, y, button, modifiers):
 	global menu, conn, game_over
 	if button == mouse.LEFT:
 		print 'The left mouse button was pressed.'
-		if menu:
+		"""if menu:
 
 			game_start()
 			
 			
-			pyglet.clock.schedule_interval(update, 1/120.0)
+			pyglet.clock.schedule_interval(update, 1/180.0)
 			e.set()
 			menu = False
 
@@ -50,18 +55,24 @@ def on_mouse_press(x, y, button, modifiers):
 				except Exception,err:
 					print err
 					e.clear()
-					pyglet.clock.unschedule(update)
+					pyglet.clock.unschedule(update)"""
 @window.event
 def on_draw():
 	global menu,game_over
 
-	try:
-		if menu:
-			if game_over:
-				time.sleep(2)
-				game_over = False
-			window.clear()
-			game_menu_label.draw()
+	window.clear()
+	glEnable(GL_BLEND)
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+	lvl1.lvl1_bg()
+	game_window.update_timer_label()
+	game_window.main_batch.draw()
+	"""try:
+		if not menu:
+			#window.clear()
+			glEnable(GL_BLEND)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+			lvl1.lvl1_bg()
+			game_window.main_batch.draw()
 		elif game_over:
 			window.clear()
 			glEnable(GL_BLEND)
@@ -70,21 +81,20 @@ def on_draw():
 			game_window.main_batch.draw()
 			menu = True
 		else:
+			if game_over:
+				time.sleep(2)
+				game_over = False
 			window.clear()
-			glEnable(GL_BLEND)
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-			lvl1.lvl1_bg()
-			game_window.update_timer_label()
-			game_window.main_batch.draw()
+			game_menu_label.draw()
+			
 	except Exception, e:
 		print e
-		fuck_given = 0
+		fuck_given = 0"""
 
 def p2_update(conn,s,e):
 	global menu, game_over
 	while True:
 		e.wait()
-		print 'dasdsa'
 		try:
 			msg = conn.getMessage()
 			if msg == QUIT:
@@ -96,10 +106,10 @@ def p2_update(conn,s,e):
 				menu = True
 			else:
 				if len(game_window.game_objects) > 0:
-					if playertype == 1:
-						game_window.player2.remote_update(msg, 0)
-					else:
+					if playertype != 1:
 						game_window.player1.remote_update(msg, 0)
+					else:
+						game_window.player2.remote_update(msg, 0)
 				
 				player_dead = False
 				
@@ -150,12 +160,11 @@ def init():
 	playerid = -1
 	player2id = -1
 
-	host = '127.0.0.1'
 	port = 7667
 	s = socket.socket()
 
 	print "Client tries to connect to server..."
-	s.connect((host, port)) 
+	s.connect((HOST, port)) 
 
 	print "Client connected!"
 
@@ -198,9 +207,14 @@ def update(dt):
 			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 	
 	player_dead = False
+	#victory= False
 	for obj in game_window.game_objects:
 		if obj.dead:
 			player_dead= True
+		'''if obj.fin and obj.ptype == 1:
+			victory = True
+		if not obj.fin and obj.ptype == 2:
+			victory = False'''
 	
 	if player_dead:
 		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
@@ -211,16 +225,21 @@ def update(dt):
 		game_over = True
 		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
+	#if victory:
+
 def update_timer():
 	while True:
 		game_window.update_time()
-		time.sleep(1)
+		time.sleep(1)		
 
 if __name__ == "__main__":
 	global conn,s
 	
 	init()
-
+	game_start()
+	
+	
+	pyglet.clock.schedule_interval(update, 1/180.0)
 	e = threading.Event()
 			
 	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
@@ -230,8 +249,8 @@ if __name__ == "__main__":
 	timer_thread = threading.Thread(target=update_timer)
 	timer_thread.daemon = True
 	timer_thread.start()
-
-	e.clear()
+	e.set()
+	#e.clear()
 
 	try:	
 		pyglet.app.run()
