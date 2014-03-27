@@ -112,10 +112,14 @@ def p2_update(conn,s,e):
 						game_window.player2.remote_update(msg, 0)
 				
 				player_dead = False
-				
+				victory= False
 				for obj in game_window.game_objects:
 					if obj.dead:
 						player_dead= True
+					if obj.fin and obj.ptype == 1:
+						victory = True
+					if not obj.fin and obj.ptype == 2:
+						victory = False
 				
 				if msg=='G.O.':
 					game_window.game_over()
@@ -124,6 +128,14 @@ def p2_update(conn,s,e):
 					reset()
 					game_over = True
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+
+				elif msg == 'win':
+					game_window.game_win()
+					e.clear()
+					pyglet.clock.unschedule(update)
+					reset()
+					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+
 
 		except Exception, err:
 			print err
@@ -207,14 +219,14 @@ def update(dt):
 			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 	
 	player_dead = False
-	#victory= False
+	victory= False
 	for obj in game_window.game_objects:
 		if obj.dead:
 			player_dead= True
-		'''if obj.fin and obj.ptype == 1:
+		if obj.fin and obj.ptype == 1:
 			victory = True
 		if not obj.fin and obj.ptype == 2:
-			victory = False'''
+			victory = False
 	
 	if player_dead:
 		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
@@ -225,7 +237,13 @@ def update(dt):
 		game_over = True
 		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
-	#if victory:
+	if victory:
+		conn.sendMessage([UPDATE,playerid, player2id, [], 'win'])
+		game_window.game_win()
+		e.clear()
+		pyglet.clock.unschedule(update)
+		reset()
+		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
 def update_timer():
 	while True:

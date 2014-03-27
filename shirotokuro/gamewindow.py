@@ -23,6 +23,10 @@ class GameWindow(object):
                                     x=2000, y=300, anchor_x='center', 
                                     font_size=48, bold= True, color=(236, 188, 175, 255), batch=self.main_batch)
 
+		self.win_label = pyglet.text.Label(text="YOU WIN",
+                                    x=2000, y=300, anchor_x='center', 
+                                    font_size=48, bold= True, color=(236, 188, 175, 255), batch=self.main_batch)
+
 		self.time = 0
 		self.timer_label = pyglet.text.Label(text="Time Lapsed: %d s" %(self.time), x=0,y=580, bold=True, color=(236, 188, 175, 255), batch=self.main_batch)
 
@@ -35,6 +39,11 @@ class GameWindow(object):
 		self.game_objects.remove(self.player1)
 		self.game_objects.remove(self.player2)
 		self.timer_label.y=700
+
+	def game_win(self):
+		self.win_label.x=500
+		self.game_objects.remove(self.player1)
+		self.game_objects.remove(self.player2)
 
 	def update_time(self):
 		self.time = self.time + 1
