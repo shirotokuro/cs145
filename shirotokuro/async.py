@@ -17,6 +17,7 @@ WAIT = 55
 PAIR = 22
 UPDATE = 20
 READY = 5
+ORPHAN = 1
 
 
 
@@ -38,15 +39,23 @@ class ChatHandler(asyncore.dispatcher):
         """Notify server of any new incoming data"""
         data = self.recv(2048)
         if data != '\n':
-            self.server.newMessage(data, self)
+            try:
+                self.server.newMessage(data, self)
+            except Exception, e:
+                fuck_given = 0
 
     def handle_write(self):
         """send some amount of buffer"""
         sent = self.send(self.buffer)
         self.buffer = self.buffer[sent:]
 
-    def handle_error(self):
+    def handle_close(self):
         self.close()
+
+
+    #def handle_error(self):
+        #print 'heloooo'
+        #self.close()
 
 class ChatServer(asyncore.dispatcher):
     """Receive and forward chat messages
@@ -111,15 +120,15 @@ class ChatServer(asyncore.dispatcher):
         self.buffer = data
         #print "#", self.buffer
         data = pickle.loads(data)
-        #print data
+    
         m = message.Message(data)
-        
+        k = m.type
         if m.type == WAIT:
             try:
                 i = self.paired.index(m.pid)
                 self.availclients.remove(m.pid)
                 msg = [PAIR, self.paired.index(self.paired.index(m.pid))+1, 1]
-                print msg
+                #print msg
                 msg = pickle.dumps(msg)
                 self.clients[self.clientids.index(m.pid)].buffer += msg  
             except Exception, e:
@@ -150,10 +159,18 @@ class ChatServer(asyncore.dispatcher):
                 self.availclients.remove(m.pid)
                 self.availclients.remove(m.p2id)
             except Exception, e:
-                self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
+                try:
+                    self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
+                except:
+                    fuck_given = 0
             self.clients[self.clientids.index(m.pid)].close()
         elif m.type == READY:
             self.clients[m.p2id - 1].buffer += pickle.dumps([READY, m.pid, p.p2id])
+        elif m.type == ORPHAN:
+            print 'ORPHANED'
+            self.paired.remove(m.pid)
+            self.availclients.remove(m.pid)
+            self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
 
     def handle_accept(self):
         """Deal with newly accepted connection"""

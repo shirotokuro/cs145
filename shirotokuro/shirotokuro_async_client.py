@@ -1,6 +1,9 @@
 import pyglet, random, math, socket, connection, time, message, traceback, asyncore, threading, thread
-from game import player, resources
+from game import player, resources, lvl1
 import gamewindow
+from pyglet.window import key
+from pyglet.window import mouse
+from pyglet.gl import *
 
 OK = 200
 ERR = 666
@@ -8,19 +11,79 @@ QUIT = 69
 WAIT = 55
 PAIR = 22
 UPDATE = 20
+ORPHAN = 1
+
+window = pyglet.window.Window(1000, 600)
+
+
+game_window = gamewindow.GameWindow()
+game_menu_label = pyglet.text.Label(text="CLICK ANYWHERE TO START!",
+                                    x=500, y=300, anchor_x='center', 
+                                    font_size=40, bold= True, color=(236, 188, 175, 255))
+
+menu = True
+
+@window.event
+def on_mouse_press(x, y, button, modifiers):
+	global menu, conn
+	if button == mouse.LEFT:
+		print 'The left mouse button was pressed.'
+		if menu:
+
+			game_start()
+			
+			
+			pyglet.clock.schedule_interval(update, 1/120.0)
+			e.set()
+			menu = False
+
+			@window.event
+			def on_close():
+				print 'Bye!'
+				try:
+					e.clear()
+					conn.sendMessage([QUIT,playerid, player2id, [], ''])
+					s.close()
+					pyglet.clock.unschedule(update)
+				except Exception,err:
+					print err
+					e.clear()
+					pyglet.clock.unschedule(update)
+		else:
+			menu = True
+
+@window.event
+def on_draw():
+	global menu
+
+	try:
+		if menu:
+			window.clear()
+			game_menu_label.draw()
+		else:
+			window.clear()
+			glEnable(GL_BLEND)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+			lvl1.lvl1_bg()
+			game_window.main_batch.draw()
+	except Exception, e:
+		print e
+		fuck_given = 0
 
 def p2_update(conn,s,e):
+	global menu
 	while True:
 		e.wait()
+		print 'dasdsa'
 		try:
 			msg = conn.getMessage()
 			if msg == QUIT:
 				e.clear()
-				conn.sendMessage([QUIT,playerid, player2id, [], ''])
-				print "Sorry your partner quit. Exiting..."
-				game_window.close()
+				conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+				print "Sorry your partner quit."
 				pyglet.clock.unschedule(update)
-				print 'Bye!'
+				reset()
+				menu = True
 			else:
 				if len(game_window.game_objects) > 0:
 					if playertype == 1:
@@ -38,6 +101,7 @@ def p2_update(conn,s,e):
 					game_window.game_over()
 
 		except Exception, err:
+			print err
 			e.clear()
 
 def confirm(conn, playerid):
@@ -78,14 +142,32 @@ def init():
 	print "Client connected!"
 
 	conn = connection.connection(s) 
+
+def reset():
+	global conn,s
+	global playerid, player2id, game_window, playertype
+
+	playerid = -1
+	player2id = -1
+	playertype = -1
+
+def game_start():
+	global conn,s
+	global playerid, player2id, game_window, playertype 
+
+	playerid = -1
+	player2id = -1
+	playertype = -1
+
 	playerid = confirm(conn, playerid)
 	player2id,playertype = pair(conn, playerid, player2id)
+
 	game_window = gamewindow.GameWindow()
 
 	if playertype == 1:
-		game_window.push_handlers(game_window.player1.key_handler)
+		window.push_handlers(game_window.player1.key_handler)
 	else:
-		game_window.push_handlers(game_window.player2.key_handler)
+		window.push_handlers(game_window.player2.key_handler)
 
 def update(dt):
 	
@@ -110,35 +192,18 @@ def update(dt):
 if __name__ == "__main__":
 	global conn,s
 	
+	init()
+
 	e = threading.Event()
-
-	try:
-		init()
-
-		updater = threading.Thread(target=p2_update, args=(conn,s,e,))
-		updater.daemon =True
-		updater.start()
-		
-		e.set()
-		
-		pyglet.clock.schedule_interval(update, 1/120.0)
-
-		@game_window.event
-		def on_close():
-			global e
-			print 'Bye!'
-			#e.clear()
-			try:
-				e.clear()
-				conn.sendMessage([QUIT,playerid, player2id, [], ''])
-				s.close()
-				pyglet.clock.unschedule(update)
-			except Exception,e:
-				e.clear()
-				pyglet.clock.unschedule(update)
 			
-		pyglet.app.run()
+	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
+	updater.daemon =True
+	updater.start()
 
+	e.clear()
+
+	try:	
+		pyglet.app.run()
 	
 	except (KeyboardInterrupt, SystemExit):
 		try:	
@@ -152,7 +217,7 @@ if __name__ == "__main__":
 		print 'Socket error!'
 	
 	except Exception as e:
-		conn.sendMessage([QUIT,playerid, player2id, [], ''])
-		s.close()
+		#conn.sendMessage([QUIT,playerid, player2id, [], ''])
+		#s.close()
 		traceback.print_exc()
 		print 'Other error!'

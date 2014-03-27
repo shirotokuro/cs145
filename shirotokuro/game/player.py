@@ -78,9 +78,9 @@ class Player(pyglet.sprite.Sprite):
 			self.left_sprite.visible = False
 			
 			# Scale
-			self.scale = 0.55
-			self.right_sprite.scale = 0.55
-			self.left_sprite.scale = 0.55
+			self.scale = 0.50
+			self.right_sprite.scale = 0.50
+			self.left_sprite.scale = 0.50
 
 			self.ptype = 2
 
