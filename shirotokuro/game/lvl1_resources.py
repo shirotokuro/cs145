@@ -59,4 +59,4 @@ elev= pyglet.resource.image("imgs/lvl1/elev.png")
 elev.width= elev.height= 40
 elev.anchor_y = elev.height
 
-#border= pyglet.resource.image("imgs/lvl1/border.png")
+border= pyglet.resource.image("imgs/lvl1/border.png")

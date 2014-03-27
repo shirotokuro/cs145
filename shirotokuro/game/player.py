@@ -62,7 +62,7 @@ class Player(pyglet.sprite.Sprite):
 			self.image.y = self.y
 			self.right1, self.right2, self.right3 = resources.right(ptype)
 			self.anim_right = pyglet.image.Animation.from_image_sequence([
-        	self.right1, self.right2], 0.1, True)
+        	self.right1, self.right2, self.right3], 0.1, True)
 			self.right_sprite = pyglet.sprite.Sprite(img=self.anim_right, x=self.x, y=self.y, batch=self.batch)
 			self.right_sprite.x = self.x
 			self.right_sprite.y = self.y
@@ -202,7 +202,7 @@ class Player(pyglet.sprite.Sprite):
 			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
 				self.gem_count= self.gem_count -1
 				self.lvl[y_index][x_index] = 0
-			elif self.lvl[y_index][x_index] == 17 and (233 == self.y or 355<= self.y <= 360):
+			elif self.lvl[y_index][x_index] == 17 and (235<= self.y <= 240 or 355<= self.y <= 360):
 				#print 'purintu'
 				self.lvl[y_index][x_index] = 0
 				if elevator.dir == 0:
