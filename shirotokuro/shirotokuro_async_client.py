@@ -11,6 +11,7 @@ QUIT = 69
 WAIT = 55
 PAIR = 22
 UPDATE = 20
+READY = 5
 ORPHAN = 1
 
 window = pyglet.window.Window(1000, 600)
@@ -22,10 +23,11 @@ game_menu_label = pyglet.text.Label(text="CLICK ANYWHERE TO START!",
                                     font_size=40, bold= True, color=(236, 188, 175, 255))
 
 menu = True
+game_over = False
 
 @window.event
 def on_mouse_press(x, y, button, modifiers):
-	global menu, conn
+	global menu, conn, game_over
 	if button == mouse.LEFT:
 		print 'The left mouse button was pressed.'
 		if menu:
@@ -49,17 +51,24 @@ def on_mouse_press(x, y, button, modifiers):
 					print err
 					e.clear()
 					pyglet.clock.unschedule(update)
-		else:
-			menu = True
-
 @window.event
 def on_draw():
-	global menu
+	global menu,game_over
 
 	try:
 		if menu:
+			if game_over:
+				time.sleep(2)
+				game_over = False
 			window.clear()
 			game_menu_label.draw()
+		elif game_over:
+			window.clear()
+			glEnable(GL_BLEND)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+			lvl1.lvl1_bg()
+			game_window.main_batch.draw()
+			menu = True
 		else:
 			window.clear()
 			glEnable(GL_BLEND)
@@ -71,7 +80,7 @@ def on_draw():
 		fuck_given = 0
 
 def p2_update(conn,s,e):
-	global menu
+	global menu, game_over
 	while True:
 		e.wait()
 		print 'dasdsa'
@@ -99,12 +108,18 @@ def p2_update(conn,s,e):
 				
 				if msg=='G.O.':
 					game_window.game_over()
+					e.clear()
+					pyglet.clock.unschedule(update)
+					reset()
+					game_over = True
+					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
 		except Exception, err:
 			print err
 			e.clear()
 
 def confirm(conn, playerid):
+	print 'confirm'
 	while playerid == -1:
 		message = conn.getMessage()
 		if message[0] == 0:
@@ -123,6 +138,8 @@ def pair(conn, playerid, player2id):
 			time.sleep(0.01)
 	print "Your partner is ", player2id
 	print "Your playertype is ", m[2]
+	msg = [READY, playerid, player2id, [], '']
+	conn.sendMessage(msg)
 	return player2id, m[2]
 
 def init():
@@ -143,11 +160,12 @@ def init():
 
 	conn = connection.connection(s) 
 
+	playerid = confirm(conn, playerid)
+
 def reset():
 	global conn,s
 	global playerid, player2id, game_window, playertype
 
-	playerid = -1
 	player2id = -1
 	playertype = -1
 
@@ -155,11 +173,9 @@ def game_start():
 	global conn,s
 	global playerid, player2id, game_window, playertype 
 
-	playerid = -1
 	player2id = -1
 	playertype = -1
 
-	playerid = confirm(conn, playerid)
 	player2id,playertype = pair(conn, playerid, player2id)
 
 	game_window = gamewindow.GameWindow()
@@ -170,7 +186,7 @@ def game_start():
 		window.push_handlers(game_window.player2.key_handler)
 
 def update(dt):
-	
+	global menu, game_over
 	if len(game_window.game_objects) > 0:
 		
 		if playertype == 1:
@@ -188,6 +204,11 @@ def update(dt):
 	if player_dead:
 		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
 		game_window.game_over()
+		e.clear()
+		pyglet.clock.unschedule(update)
+		reset()
+		game_over = True
+		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
 if __name__ == "__main__":
 	global conn,s

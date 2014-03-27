@@ -126,11 +126,16 @@ class ChatServer(asyncore.dispatcher):
         if m.type == WAIT:
             try:
                 i = self.paired.index(m.pid)
-                self.availclients.remove(m.pid)
-                msg = [PAIR, self.paired.index(self.paired.index(m.pid))+1, 1]
-                #print msg
-                msg = pickle.dumps(msg)
-                self.clients[self.clientids.index(m.pid)].buffer += msg  
+                print 'paired',m
+                try:
+                    self.availclients.remove(m.pid)
+                except Exception, e:
+                    self.availclients.remove(m.p2id)
+                finally:
+                    msg = [PAIR, self.paired.index(self.paired.index(m.pid))+1, 1]
+                    msg = pickle.dumps(msg)
+                    self.clients[self.clientids.index(m.pid)].buffer += msg  
+               
             except Exception, e:
                 try:
                    i = self.availclients.index(m.pid)
@@ -165,12 +170,16 @@ class ChatServer(asyncore.dispatcher):
                     fuck_given = 0
             self.clients[self.clientids.index(m.pid)].close()
         elif m.type == READY:
-            self.clients[m.p2id - 1].buffer += pickle.dumps([READY, m.pid, p.p2id])
+            try:
+                self.availclients.remove(m.pid)
+            except Exception, e:
+                fuck_given = 0
         elif m.type == ORPHAN:
             print 'ORPHANED'
             self.paired.remove(m.pid)
             self.availclients.remove(m.pid)
-            self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
+            #self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
+            #self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
 
     def handle_accept(self):
         """Deal with newly accepted connection"""

@@ -20,8 +20,8 @@ class GameWindow(object):
 		self.player2.set(2)
 
 		self.game_over_label = pyglet.text.Label(text="GAME OVER",
-                                    x=500, y=300, anchor_x='center', 
-                                    font_size=48, bold= True, color=(236, 188, 175, 255))
+                                    x=2000, y=300, anchor_x='center', 
+                                    font_size=48, bold= True, color=(236, 188, 175, 255), batch=self.main_batch)
 
 		self.game_objects = [self.player1, self.player2]
 
