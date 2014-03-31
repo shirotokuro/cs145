@@ -49,4 +49,4 @@ class GameWindow(object):
 		self.time = self.time + 1
 
 	def update_timer_label(self):
-		self.timer_label.text = "Time Lapsed: %d s" %(self.time)
+		self.timer_label.text = "Time Elapsed: %d s" %(self.time)
