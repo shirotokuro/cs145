@@ -1,7 +1,7 @@
 import pyglet, math
 from pyglet.window import key
 import resources
-from lvl1 import elevator
+from lvl1 import elevator, fire
 
 class Player(pyglet.sprite.Sprite):
 	"""A sprite with physical properties such as velocity"""
@@ -44,7 +44,7 @@ class Player(pyglet.sprite.Sprite):
 		self.jumping = False
 		self.gravity = 0.068
 		self.thrust = 60 * self.gravity
-
+ 
 		self.lvl= lvl
 		self.ptype= 1
 		self.obj_size= 40
@@ -196,10 +196,10 @@ class Player(pyglet.sprite.Sprite):
 				self.fin= True
 			elif self.gem_count == 0 and self.ptype == 2 and 895 <= self.x <= 905 and 503.0 <= self.y <= 507.0:
 				self.fin= True
-			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
+			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (y_index*40 + 23) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 29):
 				self.gem_count= self.gem_count -1
 				self.lvl[y_index][x_index] = 0
-			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
+			elif self.ptype == 2 and self.lvl[y_index][x_index] == 8 and (y_index*40 + 23) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 29):
 				self.gem_count= self.gem_count -1
 				self.lvl[y_index][x_index] = 0
 			elif self.lvl[y_index][x_index] == 17 and (235<= self.y <= 240 or 355<= self.y <= 360):
@@ -212,6 +212,9 @@ class Player(pyglet.sprite.Sprite):
 				elif elevator.dir == 2:
 					elevator.dir = 1
 				self.stepper = self.ptype
+			elif fire.collides_with(self):
+				self.dead = True
+				fire.visible= False
 
 	def delete(self):
 		self.right_sprite.delete()

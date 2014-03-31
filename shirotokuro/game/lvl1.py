@@ -1,5 +1,5 @@
 import pyglet
-import elevator
+import elevator, fire
 from lvl1_resources import *
 
 lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
@@ -24,6 +24,7 @@ lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
 
 lvl1.reverse()
 elevator= elevator.Elevator(x= 0, y= 240)
+fire= fire.Fire(img= fireball, x=0, y= 230)
 def lvl1_bg():
 	background.blit(0,0)
 
@@ -69,4 +70,6 @@ def lvl1_bg():
 		curr_y= curr_y+40
 	elevator.update()
 	elevator.draw()
+	fire.update()
+	fire.draw()
 	#lvl1_batch.draw()

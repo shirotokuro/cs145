@@ -1,4 +1,5 @@
 import pyglet
+from resources import center_image
 
 background = pyglet.resource.image("imgs/lvl1/bg.png")
 background.height= 600
@@ -58,5 +59,9 @@ button.width= button.height= 40
 elev= pyglet.resource.image("imgs/lvl1/elev.png")
 elev.width= elev.height= 40
 elev.anchor_y = elev.height
+
+fireball= pyglet.resource.image("imgs/fireball.png")
+fireball.width= fireball.height= 20
+center_image(fireball)
 
 border= pyglet.resource.image("imgs/lvl1/border.png")

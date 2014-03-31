@@ -15,8 +15,8 @@ class GameWindow(object):
 		self.main_batch = pyglet.graphics.Batch()
 
 		#Initialize players
-		self.player1 = player.Player(lvl= lvl1.lvl1,x=105, y=105, batch=self.main_batch)
-		self.player2 = player.Player(lvl= lvl1.lvl1,x=55, y=105,batch=self.main_batch)
+		self.player1 = player.Player(lvl= lvl1.lvl1,x=105, y=100, batch=self.main_batch)
+		self.player2 = player.Player(lvl= lvl1.lvl1,x=55, y=100,batch=self.main_batch)
 		self.player2.set(2)
 
 		self.game_over_label = pyglet.text.Label(text="GAME OVER",
