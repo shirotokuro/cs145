@@ -46,10 +46,10 @@ whtdoortop.width = whtdoortop.height= 40
 whtdoor= pyglet.resource.image("imgs/whtdoor.png")
 whtdoor.width = whtdoor.height= 40
 
-gemWht= pyglet.resource.image("imgs/gemWht.png")
+gemWht= pyglet.resource.image("imgs/gemPink.png")
 gemWht.width = gemWht.height = 40
 
-gemBlk= pyglet.resource.image("imgs/gemBlk.png")
+gemBlk= pyglet.resource.image("imgs/gemGreen.png")
 gemBlk.width = gemBlk.height = 40
 
 button= pyglet.resource.image("imgs/lvl1/button.png")

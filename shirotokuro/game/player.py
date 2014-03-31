@@ -9,7 +9,7 @@ class Player(pyglet.sprite.Sprite):
 	def __init__( self, lvl, *args, **kwargs):
 		super(Player, self).__init__(img=resources.player1_image, *args, **kwargs)
 		
-		self.right1, self.right2, self.right3 = resources.right(1)
+		self.right1, self.right2= resources.right(1)
 		
 		self.anim_right = pyglet.image.Animation.from_image_sequence([
         	#self.right1, self.right2, self.right3], 0.1, True)
@@ -19,10 +19,10 @@ class Player(pyglet.sprite.Sprite):
 		self.right_sprite.y = self.y
 		self.right_sprite.visible = False
 
-		self.left1, self.left2, self.left3 = resources.left(1)
+		self.left1, self.left2= resources.left(1)
 		
 		self.anim_left = pyglet.image.Animation.from_image_sequence([
-        	self.left1, self.left2, self.left3], 0.1, True)
+        	self.left1, self.left2], 0.1, True)
 		self.left_sprite = pyglet.sprite.Sprite(img=self.anim_left, *args, **kwargs)
 		self.left_sprite.x = self.x
 		self.left_sprite.y = self.y
@@ -60,18 +60,18 @@ class Player(pyglet.sprite.Sprite):
 			self.image = resources.player2_image
 			self.image.x = self.x
 			self.image.y = self.y
-			self.right1, self.right2, self.right3 = resources.right(ptype)
+			self.right1, self.right2= resources.right(ptype)
 			self.anim_right = pyglet.image.Animation.from_image_sequence([
-        	self.right1, self.right2, self.right3], 0.1, True)
+        	self.right1, self.right2], 0.1, True)
 			self.right_sprite = pyglet.sprite.Sprite(img=self.anim_right, x=self.x, y=self.y, batch=self.batch)
 			self.right_sprite.x = self.x
 			self.right_sprite.y = self.y
 			self.right_sprite.visible = False
 			
-			self.left1, self.left2, self.left3 = resources.left(ptype)
+			self.left1, self.left2= resources.left(ptype)
 		
 			self.anim_left = pyglet.image.Animation.from_image_sequence([
-	        	self.left1, self.left2, self.left3], 0.1, True)
+	        	self.left1, self.left2], 0.1, True)
 			self.left_sprite = pyglet.sprite.Sprite(img=self.anim_left, x=self.x, y=self.y, batch=self.batch)
 			self.left_sprite.x = self.x
 			self.left_sprite.y = self.y
