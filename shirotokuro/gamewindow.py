@@ -28,6 +28,7 @@ class GameWindow(object):
                                     font_size=48, bold= True, color=(236, 188, 175, 255), batch=self.main_batch)
 
 		self.time = 0
+		self.fin= False;
 		self.timer_label = pyglet.text.Label(text="Time Elapsed: %d s" %(self.time), x=0,y=580, bold=True, color=(236, 188, 175, 255), batch=self.main_batch)
 
 		self.game_objects = [self.player1, self.player2]
@@ -44,9 +45,11 @@ class GameWindow(object):
 		self.win_label.x=500
 		self.game_objects.remove(self.player1)
 		self.game_objects.remove(self.player2)
+		self.fin= True
 
 	def update_time(self):
-		self.time = self.time + 1
+		if not self.fin:
+			self.time = self.time + 1
 
 	def update_timer_label(self):
 		self.timer_label.text = "Time Elapsed: %d s" %(self.time)

@@ -105,7 +105,7 @@ class Player(pyglet.sprite.Sprite):
 			if self.jumping == False:
 				self.velocity_y = 60 * self.gravity
 				sound = pyglet.resource.media('sounds/jump.wav')
-				sound.play()
+				#sound.play()
 			self.jumping = True
 	
 	def check_bounds(self, dir):
@@ -192,9 +192,9 @@ class Player(pyglet.sprite.Sprite):
 				self.dead = True
 			elif self.ptype == 2 and (self.lvl[y_index2-1][x_index] == 15 or self.lvl[y_index2-1][x_index] == 14):
 				self.dead = True
-			elif self.gem_count == 0 and self.ptype == 1 and 775 <= self.x <= 785 and self.y == 505.0:
+			elif self.gem_count == 0 and self.ptype == 1 and 775 <= self.x <= 785 and 503.0 <= self.y <= 507.0:
 				self.fin= True
-			elif self.gem_count == 0 and self.ptype == 2 and 895 <= self.x <= 905 and self.y == 505.0:
+			elif self.gem_count == 0 and self.ptype == 2 and 895 <= self.x <= 905 and 503.0 <= self.y <= 507.0:
 				self.fin= True
 			elif self.ptype == 1 and self.lvl[y_index][x_index] == 9 and (y_index*40 + 26) <= (self.y-(self.image.height*self.scale)/2) <= (y_index*40 + 28):
 				self.gem_count= self.gem_count -1
