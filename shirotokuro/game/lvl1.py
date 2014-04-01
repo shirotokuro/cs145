@@ -17,14 +17,30 @@ lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
 	  [1,1,1,1,1,1,1,1,1,15,15,15,1,1,16,16,16,1,1,1,4,4,4,4,4],		  	  
 	  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]]
 	#0= empty				#5= stlvl1HalfLeft 		#10= blkdoor 		#15= white_spc
-	#1= floor_mid			#6= stlvl1HalfMid		#11= blkdoortop 	#16= blk_spc
+	#1= floor_mid			#6= stlvl1HalfMid		#11= blkdoortop 	#16= wave_green
 	#2= floor 	  			#7= stlvl1HalfRight		#12= whtdoor 		#17= button
 	#3= floor_half			#8= gemBlk				#13= whtdoortop 	#18= door
 	#4= floor_center		#9= gemWht				#14= both 			#19= elev
 
+lvl1_batch = pyglet.graphics.Batch()
+
 lvl1.reverse()
-elevator= elevator.Elevator(x= 0, y= 240)
-fire= fire.Fire(img= fireball, x=0, y= 230)
+elevator= elevator.Elevator(x= 0, y= 240, batch= lvl1_batch)
+fire= fire.Fire(img= fireball, x=0, y= 230, batch= lvl1_batch)
+
+wave_panim = pyglet.image.Animation.from_image_sequence([
+			wave_pink1, wave_pink2], 0.4, True)
+wave_pink_sprite1 = pyglet.sprite.Sprite(img=wave_panim, x= 360, y= 40, batch= lvl1_batch)
+wave_pink_sprite2 = pyglet.sprite.Sprite(img=wave_panim, x= 400, y= 40, batch= lvl1_batch)
+wave_pink_sprite3 = pyglet.sprite.Sprite(img=wave_panim, x= 440, y= 40, batch= lvl1_batch)
+
+wave_ganim = pyglet.image.Animation.from_image_sequence([
+			wave_green1, wave_green2], 0.4, True)
+wave_green_sprite1 = pyglet.sprite.Sprite(img=wave_ganim, x= 560, y= 40, batch= lvl1_batch)
+wave_green_sprite2 = pyglet.sprite.Sprite(img=wave_ganim, x= 600, y= 40, batch= lvl1_batch)
+wave_green_sprite3 = pyglet.sprite.Sprite(img=wave_ganim, x= 640, y= 40, batch= lvl1_batch)
+
+
 def lvl1_bg():
 	background.blit(0,0)
 
@@ -60,16 +76,10 @@ def lvl1_bg():
 				whtdoortop.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 14:
 				both_spc.blit(curr_x, curr_y)
-			elif lvl1[i][j] == 15:
-				wht_spc.blit(curr_x, curr_y)
-			elif lvl1[i][j] == 16: 
-				blk_spc.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 17: 
 				button.blit(curr_x, curr_y)
 			curr_x= curr_x+ 40
 		curr_y= curr_y+40
 	elevator.update()
-	elevator.draw()
 	fire.update()
-	fire.draw()
-	#lvl1_batch.draw()
+	lvl1_batch.draw()
