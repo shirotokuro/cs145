@@ -80,6 +80,7 @@ def on_draw():
 			glEnable(GL_BLEND)
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 			lvl1.lvl1_bg()
+			game_window.update_timer_label()
 			game_window.main_batch.draw()
 	except Exception, e:
 		print e
