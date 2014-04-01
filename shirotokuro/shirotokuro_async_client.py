@@ -11,7 +11,6 @@ parser.add_argument("server", help="IP address of your server.")
 args = parser.parse_args()
 HOST = args.server
 
-
 OK = 200
 ERR = 666
 QUIT = 69
@@ -23,6 +22,8 @@ ORPHAN = 1
 
 window = pyglet.window.Window(1000, 600)
 
+
+game_window = gamewindow.GameWindow()
 game_menu_label = pyglet.text.Label(text="CLICK ANYWHERE TO START!",
                                     x=500, y=300, anchor_x='center', 
                                     font_size=40, bold= True, color=(236, 188, 175, 255))
@@ -35,12 +36,12 @@ def on_mouse_press(x, y, button, modifiers):
 	global menu, conn, game_over
 	if button == mouse.LEFT:
 		print 'The left mouse button was pressed.'
-		"""if menu:
+		if menu:
 
 			game_start()
 			
 			
-			pyglet.clock.schedule_interval(update, 1/180.0)
+			#pyglet.clock.schedule_interval(update, 1/120.0)
 			e.set()
 			menu = False
 
@@ -55,24 +56,18 @@ def on_mouse_press(x, y, button, modifiers):
 				except Exception,err:
 					print err
 					e.clear()
-					pyglet.clock.unschedule(update)"""
+					pyglet.clock.unschedule(update)
 @window.event
 def on_draw():
 	global menu,game_over
 
-	window.clear()
-	glEnable(GL_BLEND)
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-	lvl1.lvl1_bg()
-	game_window.update_timer_label()
-	game_window.main_batch.draw()
-	"""try:
-		if not menu:
-			#window.clear()
-			glEnable(GL_BLEND)
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-			lvl1.lvl1_bg()
-			game_window.main_batch.draw()
+	try:
+		if menu:
+			if game_over:
+				time.sleep(2)
+				game_over = False
+			window.clear()
+			game_menu_label.draw()
 		elif game_over:
 			window.clear()
 			glEnable(GL_BLEND)
@@ -81,15 +76,14 @@ def on_draw():
 			game_window.main_batch.draw()
 			menu = True
 		else:
-			if game_over:
-				time.sleep(2)
-				game_over = False
 			window.clear()
-			game_menu_label.draw()
-			
+			glEnable(GL_BLEND)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+			lvl1.lvl1_bg()
+			game_window.main_batch.draw()
 	except Exception, e:
 		print e
-		fuck_given = 0"""
+		fuck_given = 0
 
 def p2_update(conn,s,e):
 	global menu, game_over
@@ -106,10 +100,10 @@ def p2_update(conn,s,e):
 				menu = True
 			else:
 				if len(game_window.game_objects) > 0:
-					if playertype != 1:
-						game_window.player1.remote_update(msg, 0)
-					else:
+					if playertype == 1:
 						game_window.player2.remote_update(msg, 0)
+					else:
+						game_window.player1.remote_update(msg, 0)
 				
 				player_dead = False
 				victory= False
@@ -124,7 +118,6 @@ def p2_update(conn,s,e):
 				if msg=='G.O.':
 					game_window.game_over()
 					e.clear()
-					pyglet.clock.unschedule(update)
 					reset()
 					game_over = True
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
@@ -132,10 +125,8 @@ def p2_update(conn,s,e):
 				elif msg == 'win':
 					game_window.game_win()
 					e.clear()
-					pyglet.clock.unschedule(update)
 					reset()
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
-
 
 		except Exception, err:
 			print err
@@ -191,6 +182,8 @@ def reset():
 	player2id = -1
 	playertype = -1
 
+	window.remove_handlers()
+
 def game_start():
 	global conn,s
 	global playerid, player2id, game_window, playertype 
@@ -208,56 +201,53 @@ def game_start():
 		window.push_handlers(game_window.player2.key_handler)
 
 def update(dt):
-	global menu, game_over
-	if len(game_window.game_objects) > 0:
+	global menu, game_over, playertype
+	if not menu:
+		playertype = playertype
+		if len(game_window.game_objects) > 0:
+			
+			if playertype == 1:
+				keys = game_window.player1.update(dt)
+				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+			else:
+				keys = game_window.player2.update(dt)
+				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
 		
-		if playertype == 1:
-			keys = game_window.player1.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-		else:
-			keys = game_window.player2.update(dt)
-			conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-	
-	player_dead = False
-	victory= False
-	for obj in game_window.game_objects:
-		if obj.dead:
-			player_dead= True
-		if obj.fin and obj.ptype == 1:
-			victory = True
-		if not obj.fin and obj.ptype == 2:
-			victory = False
-	
-	if player_dead:
-		conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
-		game_window.game_over()
-		e.clear()
-		pyglet.clock.unschedule(update)
-		reset()
-		game_over = True
-		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+		player_dead = False
+		victory= False
+		for obj in game_window.game_objects:
+			if obj.dead:
+				player_dead= True
+			if obj.fin and obj.ptype == 1:
+				victory = True
+			if not obj.fin and obj.ptype == 2:
+				victory = False
+		
+		if player_dead:
+			conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
+			game_window.game_over()
+			e.clear()
+			reset()
+			game_over = True
+			conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
-	if victory:
-		conn.sendMessage([UPDATE,playerid, player2id, [], 'win'])
-		game_window.game_win()
-		e.clear()
-		pyglet.clock.unschedule(update)
-		reset()
-		conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+		if victory:
+			conn.sendMessage([UPDATE,playerid, player2id, [], 'win'])
+			game_window.game_win()
+			e.clear()
+			reset()
+			conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
 def update_timer():
 	while True:
 		game_window.update_time()
-		time.sleep(1)		
+		time.sleep(1)	
 
 if __name__ == "__main__":
 	global conn,s
 	
 	init()
-	game_start()
-	
-	
-	pyglet.clock.schedule_interval(update, 1/180.0)
+
 	e = threading.Event()
 			
 	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
@@ -267,8 +257,9 @@ if __name__ == "__main__":
 	timer_thread = threading.Thread(target=update_timer)
 	timer_thread.daemon = True
 	timer_thread.start()
-	e.set()
-	#e.clear()
+
+	pyglet.clock.schedule_interval(update, 1/180.0)
+	e.clear()
 
 	try:	
 		pyglet.app.run()

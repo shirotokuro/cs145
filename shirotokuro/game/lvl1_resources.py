@@ -35,16 +35,16 @@ blk_spc.width = blk_spc.height= 40
 both_spc = pyglet.resource.image("imgs/lvl1/both.png")
 both_spc.width = both_spc.height= 40
 
-blkdoortop= pyglet.resource.image("imgs/blkdoortop.png")
+blkdoortop= pyglet.resource.image("imgs/greendoortop.png")
 blkdoortop.width = blkdoortop.height= 40
 
-blkdoor= pyglet.resource.image("imgs/blkdoor.png")
+blkdoor= pyglet.resource.image("imgs/greendoor.png")
 blkdoor.width = blkdoor.height= 40
 
-whtdoortop= pyglet.resource.image("imgs/whtdoortop.png")
+whtdoortop= pyglet.resource.image("imgs/pinkdoortop.png")
 whtdoortop.width = whtdoortop.height= 40
 
-whtdoor= pyglet.resource.image("imgs/whtdoor.png")
+whtdoor= pyglet.resource.image("imgs/pinkdoor.png")
 whtdoor.width = whtdoor.height= 40
 
 gemWht= pyglet.resource.image("imgs/gemPink.png")
@@ -61,7 +61,7 @@ elev.width= elev.height= 40
 elev.anchor_y = elev.height
 
 fireball= pyglet.resource.image("imgs/fireball.png")
-fireball.width= fireball.height= 20
+fireball.width= fireball.height= 25
 center_image(fireball)
 
 border= pyglet.resource.image("imgs/lvl1/border.png")
