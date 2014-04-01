@@ -26,13 +26,13 @@ floorHalfLeft.width = floorHalfLeft.height = 40
 floorHalfRight= pyglet.resource.image("imgs/lvl1/stoneHalfRight.png")
 floorHalfRight.width = floorHalfRight.height = 40
 
-wht_spc= pyglet.resource.image("imgs/lvl1/white.png")
+wht_spc= pyglet.resource.image("imgs/pink_wave.png")
 wht_spc.width= wht_spc.height= 40
 
-blk_spc = pyglet.resource.image("imgs/lvl1/black.png")
+blk_spc = pyglet.resource.image("imgs/green_wave.png")
 blk_spc.width = blk_spc.height= 40
 
-both_spc = pyglet.resource.image("imgs/lvl1/both.png")
+both_spc = pyglet.resource.image("imgs/blue_wave.png")
 both_spc.width = both_spc.height= 40
 
 blkdoortop= pyglet.resource.image("imgs/greendoortop.png")
