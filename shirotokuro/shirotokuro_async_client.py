@@ -5,8 +5,9 @@ from pyglet.window import key
 from pyglet.window import mouse
 from pyglet.gl import *
 import argparse
-import Tkinter
-import tkSimpleDialog
+#import Tkinter
+#import tkSimpleDialog
+import wx
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="IP address of your server.")
@@ -22,13 +23,21 @@ UPDATE = 20
 READY = 5
 ORPHAN = 1
 SET = 88
-
+'''
 root = Tkinter.Tk()
 
 root.withdraw()
 
 username = tkSimpleDialog.askstring('Username', 'Enter your username', initialvalue='anonymous')
 print username
+'''
+
+app = wx.App()
+
+dialog = wx.TextEntryDialog(None, "Enter your username ","Username", "anonymous", style=wx.OK|wx.CANCEL)
+dialog.ShowModal()
+username= dialog.GetValue()
+dialog.Destroy()
 
 if username == None:
 	sys.exit()
@@ -199,9 +208,11 @@ def init():
 	conn = connection.connection(s) 
 
 	playerid = confirm(conn, playerid)
+	
 	if username != 'anonymous':
 		msg = [SET, playerid, player2id, [], username]
 		conn.sendMessage(msg)
+	
 
 def reset():
 	global conn,s
