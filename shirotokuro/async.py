@@ -132,11 +132,11 @@ class ChatServer(asyncore.dispatcher):
             try:
                 i = self.paired.index(m.pid)
                 if i % 2 == 0:
-                    msg = [PAIR, self.paired[i+1], 1]
+                    msg = [PAIR, self.paired[i+1], 1, self.clientnames[self.clientids.index(self.paired[i+1])]]
                     msg = pickle.dumps(msg)
                     self.clients[self.clientids.index(m.pid)].buffer += msg
                 else:
-                    msg = [PAIR, self.paired[i-1], 2]
+                    msg = [PAIR, self.paired[i-1], 2, self.clientnames[self.clientids.index(self.paired[i+1])]]
                     msg = pickle.dumps(msg)
                     self.clients[self.clientids.index(m.pid)].buffer += msg
                 

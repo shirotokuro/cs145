@@ -189,8 +189,6 @@ class Player(pyglet.sprite.Sprite):
 			elif self.lvl[y_index][x_index] >= 1 and self.lvl[y_index][x_index] <= 7:
 				self.y= self.floor= (y_index+1)*self.obj_size + (self.image.height*self.scale)/2
 				self.ceiling = self.y + self.height
-			elif self.lvl[y_index-1][x_index] == 0 or 15 <= self.lvl[y_index-1][x_index] <=16 :
-				self.floor= (y_index-1)*self.obj_size + (self.image.height*self.scale)/2
 			elif self.ptype == 1 and (self.lvl[y_index2-1][x_index] == 16 or self.lvl[y_index2-1][x_index] == 14):
 				self.dead = True
 			elif self.ptype == 2 and (self.lvl[y_index2-1][x_index] == 15 or self.lvl[y_index2-1][x_index] == 14):
@@ -206,7 +204,6 @@ class Player(pyglet.sprite.Sprite):
 				self.gem_count= self.gem_count -1
 				self.lvl[y_index][x_index] = 0
 			elif self.lvl[y_index][x_index] == 17 and (235<= self.y <= 240 or 355<= self.y <= 360):
-				#print 'purintu'
 				self.lvl[y_index][x_index] = 0
 				if elevator.dir == 0:
 					elevator.dir = 1
@@ -215,6 +212,8 @@ class Player(pyglet.sprite.Sprite):
 				elif elevator.dir == 2:
 					elevator.dir = 1
 				self.stepper = self.ptype
+			elif self.lvl[y_index-1][x_index] == 0 or self.lvl[y_index-1][x_index] >= 8:
+				self.floor= (y_index-1)*self.obj_size + (self.image.height*self.scale)/2
 
 	def delete(self):
 		self.right_sprite.delete()

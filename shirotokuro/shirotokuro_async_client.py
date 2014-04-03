@@ -27,7 +27,7 @@ root = Tkinter.Tk()
 
 root.withdraw()
 
-username = tkSimpleDialog.askstring('Username', 'Enter your username')
+username = tkSimpleDialog.askstring('Username', 'Enter your username', initialvalue='anonymous')
 print username
 
 if username == None:
@@ -173,7 +173,7 @@ def pair(conn, playerid, player2id):
 			"""Just move on"""
 
 	print m
-	print "Your partner is ", player2id
+	print "Your partner is ", m[3]
 	print "Your playertype is ", m[2]
 	msg = [READY, playerid, player2id, [], '']
 	conn.sendMessage(msg)
