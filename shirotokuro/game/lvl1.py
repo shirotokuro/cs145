@@ -14,8 +14,8 @@ lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
 	  [19,0,0,0,0,17,0,0,0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,0],	
 	  [6,6,6,6,6,6,6,7,0,0,0,5,14,14,14,6,6,6,7,0,0,3,0,0,9],	
 	  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],	
-	  [0,9,0,0,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,4],	
-	  [1,1,1,1,1,1,1,1,1,15,15,15,1,1,16,16,16,1,1,1,4,4,4,4,4],		  	  
+	  [0,0,0,0,0,0,0,0,0,0,9,0,0,0,0,0,8,0,0,0,1,1,1,1,4],	
+	  [1,1,1,1,1,1,1,1,15,15,15,15,15,1,16,16,16,16,16,1,4,4,4,4,4],		  	  
 	  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]]
 	#0= empty				#5= stlvl1HalfLeft 		#10= greendoor 		#15= white_spc
 	#1= floor_mid			#6= stlvl1HalfMid		#11= greendoortop 	#16= wave_green
@@ -30,15 +30,19 @@ elevator= elevator.Elevator(x= 0, y= 240, batch= lvl1_batch)
 
 wave_panim = pyglet.image.Animation.from_image_sequence([
 			wave_pink1, wave_pink2], 0.4, True)
+wave_pink_sprite0 = pyglet.sprite.Sprite(img=wave_panim, x= 320, y= 40, batch= lvl1_batch)
 wave_pink_sprite1 = pyglet.sprite.Sprite(img=wave_panim, x= 360, y= 40, batch= lvl1_batch)
 wave_pink_sprite2 = pyglet.sprite.Sprite(img=wave_panim, x= 400, y= 40, batch= lvl1_batch)
 wave_pink_sprite3 = pyglet.sprite.Sprite(img=wave_panim, x= 440, y= 40, batch= lvl1_batch)
+wave_pink_sprite4 = pyglet.sprite.Sprite(img=wave_panim, x= 480, y= 40, batch= lvl1_batch)
 
 wave_ganim = pyglet.image.Animation.from_image_sequence([
 			wave_green1, wave_green2], 0.4, True)
 wave_green_sprite1 = pyglet.sprite.Sprite(img=wave_ganim, x= 560, y= 40, batch= lvl1_batch)
 wave_green_sprite2 = pyglet.sprite.Sprite(img=wave_ganim, x= 600, y= 40, batch= lvl1_batch)
 wave_green_sprite3 = pyglet.sprite.Sprite(img=wave_ganim, x= 640, y= 40, batch= lvl1_batch)
+wave_green_sprite4 = pyglet.sprite.Sprite(img=wave_ganim, x= 680, y= 40, batch= lvl1_batch)
+wave_green_sprite5 = pyglet.sprite.Sprite(img=wave_ganim, x= 720, y= 40, batch= lvl1_batch)
 
 wave_banim = pyglet.image.Animation.from_image_sequence([
 			wave_blue1, wave_blue2], 0.4, True)

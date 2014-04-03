@@ -97,7 +97,6 @@ def p2_update(conn,s,e):
 				e.clear()
 				conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 				print "Sorry your partner quit."
-				pyglet.clock.unschedule(update)
 				reset()
 				menu = True
 			else:
@@ -120,10 +119,11 @@ def p2_update(conn,s,e):
 				
 				if msg=='G.O.':
 					game_window.game_over()
+					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 					e.clear()
 					reset()
 					game_over = True
-					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+					
 
 				elif msg == 'win':
 					game_window.game_win()
@@ -150,9 +150,13 @@ def pair(conn, playerid, player2id):
 		msg = [WAIT, playerid, player2id, [], '']
 		conn.sendMessage(msg)
 		m = conn.getMessage()
-		player2id = m[1]
-		if player2id == -1:
-			time.sleep(0.01)
+		if m[0] == 22:
+			player2id = m[1]
+			if player2id == -1 or m == 'G.O.':
+				player2id == -1
+				time.sleep(0.01)
+
+	print m
 	print "Your partner is ", player2id
 	print "Your playertype is ", m[2]
 	msg = [READY, playerid, player2id, [], '']
