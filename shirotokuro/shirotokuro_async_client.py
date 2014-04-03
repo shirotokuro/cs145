@@ -80,11 +80,13 @@ def on_draw():
 				time.sleep(2)
 				game_over = False
 			window.clear()
+			lvl1.background.blit(0,0)
 			game_menu_label.draw()
 		elif game_over:
 			window.clear()
 			glEnable(GL_BLEND)
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+			lvl1.background.blit(0,0)
 			lvl1.lvl1_bg()
 			game_window.main_batch.draw()
 			menu = True
