@@ -178,7 +178,7 @@ class Player(pyglet.sprite.Sprite):
 					self.stepper = 0
 			if self.fire.collides_with(self):
 				self.dead = True
-				fire.visible= False
+				self.fire.visible= False
 			elif self.onElev and not self.jumping:
 				self.floor= self.y = elevator.y + (self.image.height*self.scale)/2
 				self.ceiling = self.floor + self.height
