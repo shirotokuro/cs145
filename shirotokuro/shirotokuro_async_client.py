@@ -1,10 +1,12 @@
-import pyglet, random, math, socket, connection, time, message, traceback, asyncore, threading, thread
+import pyglet, random, math, socket, connection, time, message, traceback, asyncore, threading, thread, sys
 from game import player, resources, lvl1
 import gamewindow
 from pyglet.window import key
 from pyglet.window import mouse
 from pyglet.gl import *
 import argparse
+import Tkinter
+import tkSimpleDialog
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="IP address of your server.")
@@ -19,6 +21,17 @@ PAIR = 22
 UPDATE = 20
 READY = 5
 ORPHAN = 1
+SET = 88
+
+root = Tkinter.Tk()
+
+root.withdraw()
+
+username = tkSimpleDialog.askstring('Username', 'Enter your username')
+print username
+
+if username == None:
+	sys.exit()
 
 window = pyglet.window.Window(1000, 600)
 
@@ -184,6 +197,9 @@ def init():
 	conn = connection.connection(s) 
 
 	playerid = confirm(conn, playerid)
+	if username != 'anonymous':
+		msg = [SET, playerid, player2id, [], username]
+		conn.sendMessage(msg)
 
 def reset():
 	global conn,s
@@ -259,6 +275,8 @@ def update_timer():
 
 if __name__ == "__main__":
 	global conn,s
+	#window.set_visible(False)
+	
 	
 	init()
 

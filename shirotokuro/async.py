@@ -19,6 +19,7 @@ PAIR = 22
 UPDATE = 20
 READY = 5
 ORPHAN = 1
+SET = 88
 
 
 
@@ -72,6 +73,7 @@ class ChatServer(asyncore.dispatcher):
         self.address = (host,port)
         self.clients = []
         self.clientids = []
+        self.clientnames = []
         self.buffer = ''
         self.clientid = 1
        
@@ -199,17 +201,23 @@ class ChatServer(asyncore.dispatcher):
                 fuck_given = 0
             self.lock.release()
 
+        elif m.type == SET:
+            self.clientnames[self.clientids.index(m.pid)] = m.msg
+
+
     def handle_accept(self):
         """Deal with newly accepted connection"""
         print 'got new connection'
-        
+        self.lock.acquire()
         (connSock, clientAddress) = self.accept()
         client = ChatHandler(connSock, self.map, self)
         self.clients.append(client)
+        self.clientnames.append('anonymous')
         player_details = [0, self.clientid]
         client.send(pickle.dumps(player_details))
         self.clientids = self.clientids + [self.clientid]
         self.clientid += 1
+        self.lock.release()
 
 try:
     c = ChatServer()
