@@ -50,7 +50,7 @@ class Player(pyglet.sprite.Sprite):
 		self.obj_size= 40
 		self.dead = False
 		self.fin= False
-		self.gem_count= 3
+		self.gem_count= 4
 		self.onElev= False
 		self.stepper= 0
 		self.counter = 0
