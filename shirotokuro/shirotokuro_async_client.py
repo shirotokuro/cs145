@@ -105,7 +105,8 @@ def p2_update(conn,s,e):
 					if playertype == 1:
 						game_window.player2.remote_update(msg, 0)
 					else:
-						game_window.player1.remote_update(msg, 0)
+						game_window.player1.remote_update(msg[0], 0)
+						game_window.fireball.remote_update(msg[1], msg[2])
 				
 				player_dead = False
 				victory= False
@@ -207,14 +208,14 @@ def update(dt):
 	if not menu:
 		playertype = playertype
 		if len(game_window.game_objects) > 0:
-			
 			if playertype == 1:
 				keys = game_window.player1.update(dt)
-				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+				game_window.fireball.update()
+				conn.sendMessage([UPDATE, playerid, player2id, [], [keys, game_window.fireball.x, game_window.fireball.rotation]])
 			else:
 				keys = game_window.player2.update(dt)
 				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
-		
+
 		player_dead = False
 		victory= False
 		for obj in game_window.game_objects:

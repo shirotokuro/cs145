@@ -1,6 +1,7 @@
 import pyglet
-import elevator, fire
+import elevator
 from lvl1_resources import *
+from resources import greendoortop, greendoor, pinkdoor, pinkdoortop
 
 lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
 	  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,0,0,10,0,0],
@@ -16,17 +17,16 @@ lvl1= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,0,0,11,0,0],
 	  [0,9,0,0,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,4],	
 	  [1,1,1,1,1,1,1,1,1,15,15,15,1,1,16,16,16,1,1,1,4,4,4,4,4],		  	  
 	  [4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4]]
-	#0= empty				#5= stlvl1HalfLeft 		#10= blkdoor 		#15= white_spc
-	#1= floor_mid			#6= stlvl1HalfMid		#11= blkdoortop 	#16= wave_green
-	#2= floor 	  			#7= stlvl1HalfRight		#12= whtdoor 		#17= button
-	#3= floor_half			#8= gemBlk				#13= whtdoortop 	#18= door
+	#0= empty				#5= stlvl1HalfLeft 		#10= greendoor 		#15= white_spc
+	#1= floor_mid			#6= stlvl1HalfMid		#11= greendoortop 	#16= wave_green
+	#2= floor 	  			#7= stlvl1HalfRight		#12= pinkdoor 		#17= button
+	#3= floor_half			#8= gemBlk				#13= pinkdoortop 	#18= door
 	#4= floor_center		#9= gemWht				#14= both 			#19= elev
 
 lvl1_batch = pyglet.graphics.Batch()
 
 lvl1.reverse()
 elevator= elevator.Elevator(x= 0, y= 240, batch= lvl1_batch)
-fire= fire.Fire(img= fireball, x=0, y= 230, batch= lvl1_batch)
 
 wave_panim = pyglet.image.Animation.from_image_sequence([
 			wave_pink1, wave_pink2], 0.4, True)
@@ -74,17 +74,16 @@ def lvl1_bg():
 			elif lvl1[i][j] == 9:	
 				gemWht.blit(curr_x, curr_y)		
 			elif lvl1[i][j] == 10:
-				blkdoor.blit(curr_x, curr_y)
+				greendoor.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 11:
-				blkdoortop.blit(curr_x, curr_y)
+				greendoortop.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 12:
-				whtdoor.blit(curr_x, curr_y)
+				pinkdoor.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 13:	
-				whtdoortop.blit(curr_x, curr_y)
+				pinkdoortop.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 17: 
 				button.blit(curr_x, curr_y)
 			curr_x= curr_x+ 40
 		curr_y= curr_y+40
 	elevator.update()
-	fire.update()
 	lvl1_batch.draw()

@@ -1,5 +1,5 @@
 import pyglet
-from game import player, resources, lvl1
+from game import player, resources, lvl1, fire
 from pyglet.gl import *
 
 class GameWindow(object):
@@ -14,10 +14,15 @@ class GameWindow(object):
 		
 		self.main_batch = pyglet.graphics.Batch()
 
+		self.fireball= fire.Fire(x=0, y= 230, batch= self.main_batch)
+
 		#Initialize players
-		self.player1 = player.Player(lvl= lvl1.lvl1,x=105, y=100, batch=self.main_batch)
-		self.player2 = player.Player(lvl= lvl1.lvl1,x=55, y=100,batch=self.main_batch)
+		self.player1 = player.Player(lvl= lvl1.lvl1, x=105, y=100, batch=self.main_batch)
+		self.player2 = player.Player(lvl= lvl1.lvl1, x=55, y=100,batch=self.main_batch)
 		self.player2.set(2)
+
+		self.player1.fire= self.fireball
+		self.player2.fire= self.fireball
 
 		self.game_over_label = pyglet.text.Label(text="GAME OVER",
                                     x=2000, y=300, anchor_x='center', 

@@ -1,9 +1,10 @@
 import pyglet
 import math
+from lvl1_resources import fireball
 
 class Fire(pyglet.sprite.Sprite):
 	def __init__( self, *args, **kwargs):
-		super(Fire, self).__init__(*args, **kwargs)
+		super(Fire, self).__init__(img= fireball, *args, **kwargs)
 		self.rotation= 45
 		self.rotate_speed= 5
 		self.velocity_x= 5
@@ -16,6 +17,11 @@ class Fire(pyglet.sprite.Sprite):
 	def update(self):
 		self.rotation += self.rotate_speed
 		self.x += self.velocity_x
+		self.check_bounds()
+
+	def remote_update(self, x, rotation):
+		self.rotation= rotation
+		self.x= x
 		self.check_bounds()
 
 	def distance(self, point_1=(0, 0), point_2=(0, 0)):

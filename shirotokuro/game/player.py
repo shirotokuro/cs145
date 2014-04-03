@@ -1,7 +1,7 @@
 import pyglet, math
 from pyglet.window import key
 import resources
-from lvl1 import elevator, fire
+from lvl1 import elevator
 
 class Player(pyglet.sprite.Sprite):
 	"""A sprite with physical properties such as velocity"""
@@ -176,7 +176,7 @@ class Player(pyglet.sprite.Sprite):
 					self.lvl[8][6] = 17
 					elevator.dir= 2
 					self.stepper = 0
-			if fire.collides_with(self):
+			if self.fire.collides_with(self):
 				self.dead = True
 				fire.visible= False
 			elif self.onElev and not self.jumping:

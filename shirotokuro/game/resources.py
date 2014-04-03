@@ -40,17 +40,23 @@ center_image(player2_left1_image)
 player2_left2_image = pyglet.resource.image("imgs/gright2.png").get_transform(flip_x=True)
 center_image(player2_left2_image)
 
-#player2_left3_image = pyglet.resource.image("imgs/bleft3.png")
-#center_image(player2_left3_image)
-
 player2_right1_image = pyglet.resource.image("imgs/gright1.png")
 center_image(player2_right1_image)
 
 player2_right2_image = pyglet.resource.image("imgs/gright2.png")
 center_image(player2_right2_image)
 
-#player2_right3_image = pyglet.resource.image("imgs/bright3.png")
-#center_image(player2_right3_image)
+greendoortop= pyglet.resource.image("imgs/greendoortop.png")
+greendoortop.width = greendoortop.height= 40
+
+greendoor= pyglet.resource.image("imgs/greendoor.png")
+greendoor.width = greendoor.height= 40
+
+pinkdoortop= pyglet.resource.image("imgs/pinkdoortop.png")
+pinkdoortop.width = pinkdoortop.height= 40
+
+pinkdoor= pyglet.resource.image("imgs/pinkdoor.png")
+pinkdoor.width = pinkdoor.height= 40
 
 def right(ptype=1):
 	if ptype==1:

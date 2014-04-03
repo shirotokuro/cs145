@@ -21,6 +21,7 @@ pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
 @game_window.event
 def on_draw():
     game_window.clear()
+    lvl1.background.blit(0,0)
     main_batch.draw()
     lvl1.lvl1_bg()
 
