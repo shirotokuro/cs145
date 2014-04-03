@@ -26,20 +26,23 @@ floorHalfLeft.width = floorHalfLeft.height = 40
 floorHalfRight= pyglet.resource.image("imgs/lvl1/stoneHalfRight.png")
 floorHalfRight.width = floorHalfRight.height = 40
 
-wave_pink1= pyglet.resource.image("imgs/pink_wave.png")
+wave_pink1= pyglet.resource.image("imgs/lvl1/pink_wave.png")
 wave_pink1.width= wave_pink1.height= 40
 
-wave_pink2= pyglet.resource.image("imgs/pink_wave2.png")
+wave_pink2= pyglet.resource.image("imgs/lvl1/pink_wave2.png")
 wave_pink2.width= wave_pink2.height= 40
 
-wave_green1 = pyglet.resource.image("imgs/green_wave.png")
+wave_green1 = pyglet.resource.image("imgs/lvl1/green_wave.png")
 wave_green1.width = wave_green1.height= 40
 
-wave_green2 = pyglet.resource.image("imgs/green_wave2.png")
+wave_green2 = pyglet.resource.image("imgs/lvl1/green_wave2.png")
 wave_green2.width = wave_green2.height= 40
 
-both_spc = pyglet.resource.image("imgs/blue_wave.png")
-both_spc.width = both_spc.height= 40
+wave_blue1 = pyglet.resource.image("imgs/lvl1/blue_wave.png")
+wave_blue1.width = wave_blue1.height= 40
+
+wave_blue2 = pyglet.resource.image("imgs/lvl1/blue_wave2.png")
+wave_blue2.width = wave_blue2.height= 40
 
 blkdoortop= pyglet.resource.image("imgs/greendoortop.png")
 blkdoortop.width = blkdoortop.height= 40

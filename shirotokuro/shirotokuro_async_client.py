@@ -79,9 +79,10 @@ def on_draw():
 			window.clear()
 			glEnable(GL_BLEND)
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-			lvl1.lvl1_bg()
+			lvl1.background.blit(0,0)
 			game_window.update_timer_label()
 			game_window.main_batch.draw()
+			lvl1.lvl1_bg()
 	except Exception, e:
 		print e
 		fuck_given = 0

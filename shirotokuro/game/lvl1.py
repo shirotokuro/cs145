@@ -40,9 +40,16 @@ wave_green_sprite1 = pyglet.sprite.Sprite(img=wave_ganim, x= 560, y= 40, batch= 
 wave_green_sprite2 = pyglet.sprite.Sprite(img=wave_ganim, x= 600, y= 40, batch= lvl1_batch)
 wave_green_sprite3 = pyglet.sprite.Sprite(img=wave_ganim, x= 640, y= 40, batch= lvl1_batch)
 
+wave_banim = pyglet.image.Animation.from_image_sequence([
+			wave_blue1, wave_blue2], 0.4, True)
+
+wave_blue_sprite1 = pyglet.sprite.Sprite(img=wave_banim, x= 480, y= 160, batch= lvl1_batch)
+wave_blue_sprite2 = pyglet.sprite.Sprite(img=wave_banim, x= 520, y= 160, batch= lvl1_batch)
+wave_blue_sprite3 = pyglet.sprite.Sprite(img=wave_banim, x= 560, y= 160, batch= lvl1_batch)
+
+
 
 def lvl1_bg():
-	background.blit(0,0)
 
 	curr_y= 0
 	for i in range(0, len(lvl1)):
@@ -74,8 +81,6 @@ def lvl1_bg():
 				whtdoor.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 13:	
 				whtdoortop.blit(curr_x, curr_y)
-			elif lvl1[i][j] == 14:
-				both_spc.blit(curr_x, curr_y)
 			elif lvl1[i][j] == 17: 
 				button.blit(curr_x, curr_y)
 			curr_x= curr_x+ 40
