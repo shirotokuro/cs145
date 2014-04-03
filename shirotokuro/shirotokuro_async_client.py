@@ -117,7 +117,7 @@ def p2_update(conn,s,e):
 					if not obj.fin and obj.ptype == 2:
 						victory = False
 				
-				if msg=='G.O.':
+				if msg=='G.O.' or player_dead:
 					game_window.game_over()
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 					e.clear()
@@ -125,7 +125,7 @@ def p2_update(conn,s,e):
 					game_over = True
 					
 
-				elif msg == 'win':
+				elif msg == 'win' or victory:
 					game_window.game_win()
 					e.clear()
 					reset()
@@ -149,12 +149,15 @@ def pair(conn, playerid, player2id):
 	while player2id == -1:
 		msg = [WAIT, playerid, player2id, [], '']
 		conn.sendMessage(msg)
-		m = conn.getMessage()
-		if m[0] == 22:
-			player2id = m[1]
-			if player2id == -1 or m == 'G.O.':
-				player2id == -1
-				time.sleep(0.001)
+		try:
+			m = conn.getMessage()
+			if m[0] == 22:
+				player2id = m[1]
+				if player2id == -1 or m == 'G.O.':
+					player2id == -1
+					time.sleep(0.01)
+		except Exception, e:
+			"""Just move on"""
 
 	print m
 	print "Your partner is ", player2id
@@ -247,8 +250,12 @@ def update(dt):
 
 def update_timer():
 	while True:
-		game_window.update_time()
-		time.sleep(1)	
+		try:
+			game_window.update_time()
+			time.sleep(1)	
+		except Exception, e:
+			fuck_given = 0
+			
 
 if __name__ == "__main__":
 	global conn,s
