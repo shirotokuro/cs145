@@ -45,6 +45,7 @@ class GameWindow(object):
 		self.game_objects.remove(self.player1)
 		self.game_objects.remove(self.player2)
 		self.timer_label.y=700
+		lvl1.reset()
 
 	def game_win(self):
 		self.win_label.x=500

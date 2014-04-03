@@ -91,3 +91,13 @@ def lvl1_bg():
 		curr_y= curr_y+40
 	elevator.update()
 	lvl1_batch.draw()
+
+def reset():
+	lvl1[2][10] = 9
+	lvl1[5][15] = 9
+	lvl1[7][0] = 9
+	lvl1[9][16] = 9
+	lvl1[2][16] = 8
+	lvl1[5][11] = 8
+	lvl1[8][0] = 8
+	lvl1[8][13] = 8
