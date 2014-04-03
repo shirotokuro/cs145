@@ -102,10 +102,10 @@ def p2_update(conn,s,e):
 				menu = True
 			else:
 				if len(game_window.game_objects) > 0:
-					if playertype == 1:
-						game_window.player2.remote_update(msg, 0)
-					else:
+					if playertype != 1:
 						game_window.player1.remote_update(msg, 0)
+					else:
+						game_window.player2.remote_update(msg, 0)
 				
 				player_dead = False
 				victory= False
