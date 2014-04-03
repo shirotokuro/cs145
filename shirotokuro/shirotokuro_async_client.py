@@ -103,7 +103,7 @@ def p2_update(conn,s,e):
 				if len(game_window.game_objects) > 0:
 					if playertype != 1:
 						game_window.player1.remote_update(msg[0], 0)
-						game_window.fireball.remote_update(msg[1], msg[2])
+						#game_window.fireball.remote_update(msg[1], msg[2])
 					else:
 						game_window.player2.remote_update(msg, 0)
 				
@@ -214,8 +214,8 @@ def update(dt):
 		if len(game_window.game_objects) > 0:
 			if playertype == 1:
 				keys = game_window.player1.update(dt)
-				game_window.fireball.update()
-				conn.sendMessage([UPDATE, playerid, player2id, [], [keys, game_window.fireball.x, game_window.fireball.rotation]])
+				#game_window.fireball.update()
+				conn.sendMessage([UPDATE, playerid, player2id, [], [keys, 0.0, game_window.fireball.rotation]])
 			else:
 				keys = game_window.player2.update(dt)
 				conn.sendMessage([UPDATE, playerid, player2id, [], keys])

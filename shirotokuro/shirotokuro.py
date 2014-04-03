@@ -1,13 +1,14 @@
 import pyglet, random, math
-from game import player, resources, lvl1
+from game import player, resources, lvl2
 
-game_window = pyglet.window.Window(1024, 600)
+game_window = pyglet.window.Window(1000, 600)
 
 main_batch = pyglet.graphics.Batch()
 
 # Initialize the player sprite
-player1 = player.Player(lvl= lvl1.lvl1, x=30, y=50, batch=main_batch)
-player2 = player.Player(lvl= lvl1.lvl1, x=30, y=150, batch=main_batch)
+'''
+player1 = player.Player(lvl= lvl2.lvl2, x=30, y=50, batch=main_batch)
+player2 = player.Player(lvl= lvl2.lvl2, x=30, y=150, batch=main_batch)
 player2.set(2)
 
 game_objects = [player1, player2]
@@ -16,14 +17,17 @@ game_objects = [player1, player2]
 
 game_window.push_handlers(player1.key_handler)
 game_window.push_handlers(player2.key_handler)
-pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)
+pyglet.gl.glClearColor(0.16, 0.50, 0.72,1.0)'''
+
+game_objects = []
 
 @game_window.event
 def on_draw():
     game_window.clear()
-    lvl1.background.blit(0,0)
-    main_batch.draw()
-    lvl1.lvl1_bg()
+    lvl2.background.blit(0,0)
+    #main_batch.draw()
+    lvl2.lvl2_bg()
+
 
 def update(dt):
     for obj in game_objects:
