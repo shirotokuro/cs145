@@ -4,6 +4,7 @@ import sys
 import pickle
 import message
 import random
+from multiprocessing import Lock
 
 LOCAL_HOST = 'localhost'
 LOCAL_PORT = 7668
@@ -76,6 +77,7 @@ class ChatServer(asyncore.dispatcher):
        
         self.availclients = []
         self.paired = []
+        self.lock = Lock()
         asyncore.dispatcher.__init__(self, map=self.map)
 
     def serve(self):
@@ -124,8 +126,17 @@ class ChatServer(asyncore.dispatcher):
         m = message.Message(data)
         k = m.type
         if m.type == WAIT:
+            self.lock.acquire()
             try:
                 i = self.paired.index(m.pid)
+                if i % 2 == 0:
+                    msg = [PAIR, self.paired[i+1], 1]
+                    msg = pickle.dumps(msg)
+                    self.clients[self.clientids.index(m.pid)].buffer += msg
+                else:
+                    msg = [PAIR, self.paired[i-1], 2]
+                    msg = pickle.dumps(msg)
+                    self.clients[self.clientids.index(m.pid)].buffer += msg
                 
                 try:
                     self.availclients.remove(m.pid)
@@ -144,53 +155,49 @@ class ChatServer(asyncore.dispatcher):
                 
                 available = self.checkpid(m.pid)
 
-                msg = [PAIR, available, 2]
-                msg = pickle.dumps(msg)
-                self.clients[self.clientids.index(m.pid)].buffer += msg
                 if available != -1:
                     self.paired = self.paired + [m.pid]
                     self.paired = self.paired + [available]
-                    msg = [PAIR, m.pid, 1]
-                    msg = pickle.dumps(msg)
-
-                    self.clients[self.clientids.index(available)].buffer += msg
 
                     print self.paired
 
+                msg = [PAIR, -1, 2]
+                msg = pickle.dumps(msg)
+                self.clients[self.clientids.index(m.pid)].buffer += msg
+            self.lock.release()
+
                 
         elif m.type == UPDATE:
-           # print m.msg
             self.clients[m.p2id - 1].buffer += pickle.dumps(m.msg)
+        
         elif m.type == QUIT:
+            self.lock.acquire()
             try:
                 self.paired.remove(m.pid)
-                self.availclients.remove(m.pid)
                 self.paired.remove(m.p2id)
-                self.availclients.remove(m.p2id)
+                self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
             except Exception, e:
-                try:
-                    self.clients[self.clientids.index(m.p2id)].buffer += pickle.dumps(QUIT)
-                except:
-                    print 'ds'
-                    fuck_given = 0
+                fuck_given = 0
+            self.lock.release()
+           
             self.clients[self.clientids.index(m.pid)].close()
+       
         elif m.type == READY:
+            self.lock.acquire()
             try:
                 self.availclients.remove(m.pid)
             except Exception, e:
                 fuck_given = 0
+            self.lock.release()
+        
         elif m.type == ORPHAN:
             print 'ORPHANED'
+            self.lock.acquire()
             try:
                 self.paired.remove(m.pid)
-                self.availclients.remove(m.pid)
-                self.paired.remove(m.p2id)
-                self.availclients.remove(m.p2id)
             except Exception, e:
                 fuck_given = 0
-           
-            #self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
-            #self.clients[self.clientids.index(m.pid)].buffer += pickle.dumps([0, m.pid])
+            self.lock.release()
 
     def handle_accept(self):
         """Deal with newly accepted connection"""
