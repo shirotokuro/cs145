@@ -1,6 +1,6 @@
-import pickle
+import pickle as pickle
 
-BUFFER_SIZE = 2048
+BUFFER_SIZE = 8192
 class _myConnection(object):
 	def __init__(self, s):
 		self.s = s

@@ -267,8 +267,8 @@ class Player(pyglet.sprite.Sprite):
 			self.right_sprite.visible = False
 			self.left_sprite.visible = False
 			return ''
-	
-	def remote_update(self, keys, dt):
+
+	def remote_update(self, keys, dt, x, y):
 		if self.jumping == True:
 			self.velocity_y -= self.gravity * 2
 			self.y += self.velocity_y
@@ -309,4 +309,6 @@ class Player(pyglet.sprite.Sprite):
 		else:
 			self.visible = True
 			self.right_sprite.visible = False
-			self.left_sprite.visible = False	
+			self.left_sprite.visible = False
+		self.x= x
+		self.y= y

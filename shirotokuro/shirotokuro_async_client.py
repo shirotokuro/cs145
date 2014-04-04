@@ -5,8 +5,8 @@ from pyglet.window import key
 from pyglet.window import mouse
 from pyglet.gl import *
 import argparse
-import Tkinter
-import tkSimpleDialog
+#import Tkinter
+#import tkSimpleDialog
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="IP address of your server.")
@@ -22,13 +22,16 @@ UPDATE = 20
 READY = 5
 ORPHAN = 1
 SET = 88
-
+'''
 root = Tkinter.Tk()
 
 root.withdraw()
 
 username = tkSimpleDialog.askstring('Username', 'Enter your username', initialvalue='anonymous')
-print username
+'''
+username= raw_input('Enter username:')
+print 'Hi ', username
+
 
 if username == None:
 	sys.exit()
@@ -48,7 +51,7 @@ game_over = False
 def on_mouse_press(x, y, button, modifiers):
 	global menu, conn, game_over
 	if button == mouse.LEFT:
-		print 'The left mouse button was pressed.'
+		#print 'The left mouse button was pressed.'
 		if menu:
 
 			game_start()
@@ -65,11 +68,9 @@ def on_mouse_press(x, y, button, modifiers):
 					e.clear()
 					conn.sendMessage([QUIT,playerid, player2id, [], ''])
 					s.close()
-					pyglet.clock.unschedule(update)
 				except Exception,err:
-					print err
+					#print err
 					e.clear()
-					pyglet.clock.unschedule(update)
 @window.event
 def on_draw():
 	global menu,game_over
@@ -99,7 +100,7 @@ def on_draw():
 			game_window.main_batch.draw()
 			lvl1.lvl1_bg()
 	except Exception, e:
-		print e
+		#print e
 		fuck_given = 0
 
 def p2_update(conn,s,e):
@@ -117,10 +118,11 @@ def p2_update(conn,s,e):
 			else:
 				if len(game_window.game_objects) > 0:
 					if playertype != 1:
-						game_window.player1.remote_update(msg[0], 0)
-						game_window.fireball.remote_update(msg[1], msg[2])
+						game_window.player1.remote_update(msg[0], 0, msg[1], msg[2])
+						#game_window.fireball.remote_update(msg[3], msg[4])
 					else:
-						game_window.player2.remote_update(msg, 0)
+						game_window.player2.remote_update(msg[0], 0, msg[1], msg[2])
+				
 				
 				player_dead = False
 				victory= False
@@ -132,7 +134,7 @@ def p2_update(conn,s,e):
 					if not obj.fin and obj.ptype == 2:
 						victory = False
 				
-				if msg=='G.O.' or player_dead:
+				if msg=='G.O.':
 					game_window.game_over()
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 					e.clear()
@@ -140,18 +142,18 @@ def p2_update(conn,s,e):
 					game_over = True
 					
 
-				elif msg == 'win' or victory:
+				elif msg == 'win':
 					game_window.game_win()
 					e.clear()
 					reset()
 					conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
 
 		except Exception, err:
-			print err
+			#print err
 			e.clear()
 
 def confirm(conn, playerid):
-	print 'confirm'
+	#print 'confirm'
 	while playerid == -1:
 		message = conn.getMessage()
 		if message[0] == 0:
@@ -174,8 +176,8 @@ def pair(conn, playerid, player2id):
 		except Exception, e:
 			"""Just move on"""
 
-	print m
-	print "Your partner is ", m[3]
+	#print m
+	print "Your partner is ", m[1]
 	print "Your playertype is ", m[2]
 	msg = [READY, playerid, player2id, [], '']
 	conn.sendMessage(msg)
@@ -235,11 +237,20 @@ def update(dt):
 		if len(game_window.game_objects) > 0:
 			if playertype == 1:
 				keys = game_window.player1.update(dt)
-				game_window.fireball.update()
-				conn.sendMessage([UPDATE, playerid, player2id, [], [keys, game_window.fireball.x, game_window.fireball.rotation]])
+				
+				try:
+					game_window.fireball.update()
+					conn.sendMessage([UPDATE, playerid, player2id, [], [keys, game_window.player1.x, game_window.player1.y, game_window.fireball.x, game_window.fireball.rotation]])
+				except Exception, err:
+					print err
+				
 			else:
-				keys = game_window.player2.update(dt)
-				conn.sendMessage([UPDATE, playerid, player2id, [], keys])
+				try:
+					keys = game_window.player2.update(dt)
+					conn.sendMessage([UPDATE, playerid, player2id, [], [keys, game_window.player2.x, game_window.player2.y]])
+				except Exception, err:
+					fuck_given = 0
+				
 
 		player_dead = False
 		victory= False
@@ -258,6 +269,7 @@ def update(dt):
 			reset()
 			game_over = True
 			conn.sendMessage([ORPHAN,playerid, player2id, [], ''])
+			conn.sendMessage([UPDATE,playerid, player2id, [], 'G.O.'])
 
 		if victory:
 			conn.sendMessage([UPDATE,playerid, player2id, [], 'win'])
@@ -279,23 +291,22 @@ if __name__ == "__main__":
 	global conn,s
 	#window.set_visible(False)
 	
-	
-	init()
-
-	e = threading.Event()
-			
-	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
-	updater.daemon =True
-	updater.start()
-
-	timer_thread = threading.Thread(target=update_timer)
-	timer_thread.daemon = True
-	timer_thread.start()
-
-	pyglet.clock.schedule_interval(update, 1/180.0)
-	e.clear()
-
 	try:	
+		init()
+
+		e = threading.Event()
+				
+		updater = threading.Thread(target=p2_update, args=(conn,s,e,))
+		updater.daemon =True
+		updater.start()
+
+		timer_thread = threading.Thread(target=update_timer)
+		timer_thread.daemon = True
+		timer_thread.start()
+
+		pyglet.clock.schedule_interval(update, 1/180.0)
+		e.clear()
+
 		pyglet.app.run()
 	
 	except (KeyboardInterrupt, SystemExit):
@@ -306,11 +317,11 @@ if __name__ == "__main__":
 			print 'Connection not made.'
 	
 	except socket.error as error:
-		traceback.print_exc()
+		#traceback.print_exc()
 		print 'Socket error!'
 	
 	except Exception as e:
-		#conn.sendMessage([QUIT,playerid, player2id, [], ''])
-		#s.close()
-		traceback.print_exc()
+		conn.sendMessage([QUIT,playerid, player2id, [], ''])
+		s.close()
+		#traceback.print_exc()
 		print 'Other error!'
