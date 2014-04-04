@@ -5,9 +5,9 @@ from pyglet.window import key
 from pyglet.window import mouse
 from pyglet.gl import *
 import argparse
-#import Tkinter
-#import tkSimpleDialog
-import wx
+import Tkinter
+import tkSimpleDialog
+#import wx
 
 parser = argparse.ArgumentParser()
 parser.add_argument("server", help="IP address of your server.")
@@ -23,22 +23,22 @@ UPDATE = 20
 READY = 5
 ORPHAN = 1
 SET = 88
-'''
+
 root = Tkinter.Tk()
 
 root.withdraw()
 
 username = tkSimpleDialog.askstring('Username', 'Enter your username', initialvalue='anonymous')
 print username
-'''
 
+'''
 app = wx.App()
 
 dialog = wx.TextEntryDialog(None, "Enter your username ","Username", "anonymous", style=wx.OK|wx.CANCEL)
 dialog.ShowModal()
 username= dialog.GetValue()
 dialog.Destroy()
-
+'''
 if username == None:
 	sys.exit()
 
@@ -184,7 +184,6 @@ def pair(conn, playerid, player2id):
 			"""Just move on"""
 
 	print m
-	print "Your partner is ", m[3]
 	print "Your playertype is ", m[2]
 	msg = [READY, playerid, player2id, [], '']
 	conn.sendMessage(msg)
@@ -290,23 +289,22 @@ if __name__ == "__main__":
 	global conn,s
 	#window.set_visible(False)
 	
+	try:
+		init()
+
+		e = threading.Event()
+				
+		updater = threading.Thread(target=p2_update, args=(conn,s,e,))
+		updater.daemon =True
+		updater.start()
+
+		timer_thread = threading.Thread(target=update_timer)
+		timer_thread.daemon = True
+		timer_thread.start()
+
+		pyglet.clock.schedule_interval(update, 1/180.0)
+		e.clear()
 	
-	init()
-
-	e = threading.Event()
-			
-	updater = threading.Thread(target=p2_update, args=(conn,s,e,))
-	updater.daemon =True
-	updater.start()
-
-	timer_thread = threading.Thread(target=update_timer)
-	timer_thread.daemon = True
-	timer_thread.start()
-
-	pyglet.clock.schedule_interval(update, 1/180.0)
-	e.clear()
-
-	try:	
 		pyglet.app.run()
 	
 	except (KeyboardInterrupt, SystemExit):
